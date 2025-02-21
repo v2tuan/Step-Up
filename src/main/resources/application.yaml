@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: StepUp
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect  # Dialect H2 cho Hibernate
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+#datasource:
+#  url: jdbc:mysql://localhost:3306/stepup
+#  username: root
+#  password: 1234567890
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+#    properties:
+#      hibernate.dialect: org.hibernate.dialect.MySQLDialect
+
+server:
+  port: 8089
