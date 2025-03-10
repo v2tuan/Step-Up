@@ -19,7 +19,7 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Giá trị khóa chính sẽ tự động tăng.
-    private long _id;
+    private long id;
 
     private String firstName;
     private String lastName;
