@@ -1,5 +1,7 @@
 package com.stepup.service;
 
+import com.stepup.dtos.requests.ProductDTO;
+import com.stepup.dtos.requests.ProductImageDTO;
 import com.stepup.entity.Product;
 import com.stepup.entity.ProductImage;
 import com.stepup.entity.ProductVariant;
@@ -10,6 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IProductService {
+
+    public Product createProduct(ProductDTO productDTO) throws Exception;
+
+    public ProductImage createProductImage(Long productId, ProductImageDTO productImageDTO) throws Exception;
 
     // Lấy tất cả sản phẩm
     List<Product> getAllProducts();

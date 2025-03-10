@@ -31,3 +31,5 @@ spring:
 
 server:
   port: 8089
+
+maximum_per_product: 6
