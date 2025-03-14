@@ -31,5 +31,6 @@ spring:
 
 server:
   port: 8089
-
+api:
+  prefix: /api/v1
 maximum_per_product: 6
