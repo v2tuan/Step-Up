@@ -1,8 +1,11 @@
 package com.stepup.service;
 
+import com.stepup.dtos.requests.CategoryDTO;
 import com.stepup.entity.Cart;
 import com.stepup.entity.Category;
 import java.util.List;
+import java.util.Optional;
+
 public interface ICategoryService {
     //  Lấy tất cả danh mục
     List<Category> getAllCategories();
@@ -10,7 +13,7 @@ public interface ICategoryService {
     //  Lấy tên danh mục bằng ID
     String getCategoryNameById(Long categoryId);
 
-    Category findById(Long id);
+    Optional<Category> findById(Long id);
 
     long count();
 
@@ -18,4 +21,7 @@ public interface ICategoryService {
 
     // Lưu hoặc cập nhật giỏ hàng
     Category saveCategory(Category cate);
+
+    Category createCategory(CategoryDTO categoryDTO);
+    Category updateCategory(Long id, CategoryDTO categoryDTO);
 }
