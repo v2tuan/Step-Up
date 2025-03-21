@@ -41,6 +41,13 @@ public class User {
 
     private int points;
 
+    @Column(name = "verification_code")
+    private String verificationCode;
+    @Column(name = "verification_expiration")
+    private LocalDateTime verificationCodeExpiresAt;
+
+    private boolean enabled;
+
     @CreationTimestamp // Tự động gán thời gian tạo bản ghi.
     private LocalDateTime createdAt;
 

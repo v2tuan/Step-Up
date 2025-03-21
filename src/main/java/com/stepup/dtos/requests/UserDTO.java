@@ -1,16 +1,28 @@
 package com.stepup.dtos.requests;
 
-import com.stepup.Enum.Role;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDTO {
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String phone;
-    private String password;
+    @JsonProperty("fullname")
+    private String fullName;
 
-    @Enumerated(EnumType.STRING) // Lưu giá trị enum dưới dạng chuỗi trong cơ sở dữ liệu.
-    private Role role;
+    @JsonProperty("email")
+    @Email
+    private String email = "";
+
+    @NotBlank(message = "Password cannot be blank")
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    private String password = "";
+
+    @JsonProperty("retype_password")
+    private String retypePassword = "";
 }

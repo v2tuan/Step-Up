@@ -1,12 +1,16 @@
 package com.stepup.controller;
 
 import com.stepup.dtos.requests.UserDTO;
-import com.stepup.dtos.requests.UserLoginDTO;
+import com.stepup.dtos.requests.VerifyAccountDTO;
 import com.stepup.dtos.responses.ResponseObject;
+import com.stepup.entity.User;
+import com.stepup.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,38 +21,60 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
+    @Autowired
+    private UserServiceImpl userService;
+
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult.getFieldErrors()
+    //can we register an "admin" user ?
+    public ResponseEntity<ResponseObject> createUser(
+            @Valid @RequestBody UserDTO userDTO,
+            BindingResult result
+    ) throws Exception {
+        if (result.hasErrors()) {
+            List<String> errorMessages = result.getFieldErrors()
                     .stream()
-                    .map(fieldError -> fieldError.getDefaultMessage())
+                    .map(FieldError::getDefaultMessage)
                     .toList();
-            return ResponseEntity.ok().body(ResponseObject.builder()
-                    .message(errors.toString())
+
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .data(null)
+                    .message(errorMessages.toString())
                     .build());
         }
-        return ResponseEntity.ok().body(ResponseObject.builder()
-                .message("User registered successfully").build());
 
+        if (!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
+            //registerResponse.setMessage();
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .status(HttpStatus.BAD_REQUEST)
+                    .data(null)
+                    .message("Mật khẩu không khớp")
+                    .build());
+        }
+        User user = userService.createUser(userDTO);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .status(HttpStatus.CREATED)
+                .data(user)
+                .message("Account registration successful")
+                .build());
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody UserLoginDTO userLoginDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult.getFieldErrors()
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyUser(@RequestBody VerifyAccountDTO verifyAccountDTO
+                        , BindingResult result) {
+        if (result.hasErrors()) {
+            List<String> errorMessages = result.getFieldErrors()
                     .stream()
-                    .map(fieldError -> fieldError.getDefaultMessage())
+                    .map(FieldError::getDefaultMessage)
                     .toList();
-            return ResponseEntity.ok().body(ResponseObject.builder()
-                    .message(errors.toString())
+
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .data(null)
+                    .message(errorMessages.toString())
                     .build());
         }
-        return ResponseEntity.ok().body(ResponseObject.builder()
-                .message("User login successfully").build());
+        userService.verifyUser(verifyAccountDTO);
+        return ResponseEntity.ok("Account verified successfully");
     }
 }
