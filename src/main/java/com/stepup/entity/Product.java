@@ -30,6 +30,9 @@ public class Product {
 //    private int sold;
     private boolean isActive;
 
+    private Double price;
+    private Double promotionPrice;
+
     @JsonBackReference
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     List<ProductImage> productImages;

@@ -22,7 +22,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements IProductService {
+    @Autowired
     private ProductRepository repo;
+    @Autowired
     private ProductImageRepository imageRepo;
     @Autowired
     ProductImageRepository productImageRespository;
@@ -71,7 +73,6 @@ public class ProductServiceImpl implements IProductService {
         for (VariantDetailDTO variantDTO : productDTO.getVariants()) {
             ProductVariant variant = new ProductVariant();
             variant.setProduct(product);
-            variant.setPrice(variantDTO.getPrice());
             variant.setQuantity(variantDTO.getQuantity());
 
             // Thêm các giá trị phân loại cho biến thể
@@ -175,10 +176,10 @@ public class ProductServiceImpl implements IProductService {
         return repo.findLatestProducts(pageable);
     }
 
-    @Override
-    public List<ProductVariantDTO> getProductsByCategoryAndPriceRange(Long categoryId, Double minPrice, Double maxPrice) {
-        return repo.findByCategoryAndPriceRange(categoryId, minPrice, maxPrice);
-    }
+//    @Override
+//    public List<ProductVariantDTO> getProductsByCategoryAndPriceRange(Long categoryId, Double minPrice, Double maxPrice) {
+//        return repo.findByCategoryAndPriceRange(categoryId, minPrice, maxPrice);
+//    }
 
     @Override
     public Product saveProduct(Product product) {

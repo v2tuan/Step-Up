@@ -2,15 +2,18 @@ package com.stepup.controller;
 
 import com.stepup.dtos.requests.ProductDTO;
 import com.stepup.dtos.requests.ProductImageDTO;
+import com.stepup.dtos.responses.ProductCardResponse;
 import com.stepup.dtos.responses.ResponseObject;
 import com.stepup.entity.Product;
 import com.stepup.entity.ProductImage;
+import com.stepup.mapper.IProductMapper;
 import com.stepup.service.impl.ProductServiceImpl;
 import com.stepup.utils.FileUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +27,17 @@ import java.util.List;
 public class ProductController {
     @Autowired
     private ProductServiceImpl productService;
+    @Autowired
+    IProductMapper productMapper;
     @Value("${maximum_per_product}")
     private int maximumPerProduct;
+
+    @GetMapping
+    public ResponseEntity<?> getAllProducts() {
+        List<Product> products = productService.getAllProducts();
+        List<ProductCardResponse> productCardResponses = productMapper.toProductCard(products);
+        return ResponseEntity.ok().body(productCardResponses);
+    }
 
     @GetMapping("/{id}")
     public Product getProducts(@PathVariable Long id) {
@@ -65,7 +77,8 @@ public class ProductController {
         }
     }
 
-    @PostMapping("/upload/{id}")
+    @PostMapping(value = "/upload/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @PostMapping("/upload/{id}")
     public ResponseEntity<?> uploadProductImage(
             @PathVariable long id,
             @RequestParam("files") List<MultipartFile> files

@@ -17,10 +17,15 @@ spring:
 #      enabled: true
 #      path: /h2-console
 
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/stepup
+#    username: root
+#    password: 1234567890
+
   datasource:
-    url: jdbc:mysql://localhost:3306/stepup
+    url: jdbc:mysql://mainline.proxy.rlwy.net:51159/railway
     username: root
-    password: Nhansam@01
+    password: ddzxzgBdcxBYdJiYBiRrkatfYwVtsvsl
 
   jpa:
     hibernate:
@@ -32,8 +37,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ledaonhansam@gmail.com
-    password: abbz tzwq okin rzio
+    username: laptrinhh2208@gmail.com
+    password: bewq lkvf au sasu
     properties.mail:
       smtp:
         auth: true

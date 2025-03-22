@@ -9,11 +9,11 @@ public class ProductDTO {
     private String name;
     private String description;
     private boolean isActive;
-    private boolean isSelling;
+
+    private Double price;
+    private Double promotionPrice;
 
     private long categoryId;
-
-    private String store_id;
 
     // Thông tin phân loại
     private List<VariantGroupDTO> variantGroups;
