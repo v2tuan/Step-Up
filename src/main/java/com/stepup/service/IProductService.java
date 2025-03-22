@@ -54,7 +54,7 @@ public interface IProductService {
     List<Product> getLatestProducts(Pageable pageable);
 
     //  Tìm sản phẩm theo danh mục và khoảng giá
-    List<ProductVariantDTO> getProductsByCategoryAndPriceRange(Long categoryId, Double minPrice, Double maxPrice);
+//    List<ProductVariantDTO> getProductsByCategoryAndPriceRange(Long categoryId, Double minPrice, Double maxPrice);
 
     // Lưu hoặc cập nhật sản phẩm
     Product saveProduct(Product product);

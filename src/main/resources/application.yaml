@@ -17,10 +17,15 @@ spring:
 #      enabled: true
 #      path: /h2-console
 
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/stepup
+#    username: root
+#    password: 1234567890
+
   datasource:
-    url: jdbc:mysql://localhost:3306/stepup
+    url: jdbc:mysql://mainline.proxy.rlwy.net:51159/railway
     username: root
-    password: 1234567890
+    password: ddzxzgBdcxBYdJiYBiRrkatfYwVtsvsl
 
   jpa:
     hibernate:

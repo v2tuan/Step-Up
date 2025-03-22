@@ -24,8 +24,6 @@ public class ProductVariant {
     private Product product;
 
     private String sku;
-    private Double price;
-    private Double promotionPrice;
     private int quantity;
 
     @ManyToMany

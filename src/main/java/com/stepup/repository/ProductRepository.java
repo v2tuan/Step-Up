@@ -40,17 +40,17 @@ public interface ProductRepository  extends JpaRepository<Product, Long> {
     List<Product> findLatestProducts(Pageable pageable);
 
     // Tìm sản phẩm theo danh mục và khoảng giá
-    @Query("SELECT new com.stepup.model.ProductVariantDTO( " +
-            "p.id, p.name, p.slug, p.description, p.thumbnail, p.category.id, " +
-            "pv.id, pv.sku, pv.price, pv.promotionPrice, pv.quantity) " +
-            "FROM Product p " +
-            "LEFT JOIN p.productVariants pv " +
-            "WHERE p.category.id = :categoryId " +
-            "AND pv.price BETWEEN :minPrice AND :maxPrice ORDER BY pv.price ASC")
-    List<ProductVariantDTO> findByCategoryAndPriceRange(
-            @Param("categoryId") Long categoryId,
-            @Param("minPrice") Double minPrice,
-            @Param("maxPrice") Double maxPrice);
+//    @Query("SELECT new com.stepup.model.ProductVariantDTO( " +
+//            "p.id, p.name, p.slug, p.description, p.thumbnail, p.category.id, " +
+//            "pv.id, pv.sku, pv.price, pv.promotionPrice, pv.quantity) " +
+//            "FROM Product p " +
+//            "LEFT JOIN p.productVariants pv " +
+//            "WHERE p.category.id = :categoryId " +
+//            "AND pv.price BETWEEN :minPrice AND :maxPrice ORDER BY pv.price ASC")
+//    List<ProductVariantDTO> findByCategoryAndPriceRange(
+//            @Param("categoryId") Long categoryId,
+//            @Param("minPrice") Double minPrice,
+//            @Param("maxPrice") Double maxPrice);
 
 
 }
