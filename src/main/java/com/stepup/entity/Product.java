@@ -26,16 +26,9 @@ public class Product {
     private String name;
     private String slug;
     private String description;
-    //    private int quantity;
-//    private int sold;
     private boolean isActive;
-
     private Double price;
     private Double promotionPrice;
-
-    @JsonManagedReference
-    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
-    List<ProductImage> productImages;
 
     @Column(name = "thumbnail", length = 300)
     private String thumbnail;
@@ -49,7 +42,11 @@ public class Product {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<VariantGroup> variantGroups = new ArrayList<>();
+    private List<Color> colors = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Size> sizes = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
     @JsonManagedReference

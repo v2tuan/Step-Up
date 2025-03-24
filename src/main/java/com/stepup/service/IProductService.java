@@ -1,5 +1,6 @@
 package com.stepup.service;
 
+import com.stepup.dtos.requests.ColorListDTO;
 import com.stepup.dtos.requests.ProductDTO;
 import com.stepup.dtos.requests.ProductImageDTO;
 import com.stepup.entity.Product;
@@ -15,7 +16,9 @@ public interface IProductService {
 
     public Product createProduct(ProductDTO productDTO) throws Exception;
 
-    public ProductImage createProductImage(Long productId, ProductImageDTO productImageDTO) throws Exception;
+    public Product updateProductColorImage(long id, ColorListDTO colorDTOList) throws Exception;
+
+//    public ProductImage createProductImage(Long productId, ProductImageDTO productImageDTO) throws Exception;
 
     // Lấy tất cả sản phẩm
     List<Product> getAllProducts();
@@ -45,7 +48,7 @@ public interface IProductService {
     List<ProductVariant> getProductVariants(Long productId);
 
     // Lấy danh sách ảnh của sản phẩm
-    List<ProductImage> getProductImages(Long productId);
+//    List<ProductImage> getProductImages(Long productId);
 
     //  Lọc sản phẩm có đánh giá cao nhất
     List<Product> getTopRatedProducts(Pageable pageable);

@@ -22,11 +22,6 @@ public class ProductVariantServiceImpl implements IProductVariantService {
     }
 
     @Override
-    public Optional<ProductVariant> getVariantBySku(String sku) {
-        return repo.findBySku(sku);
-    }
-
-    @Override
     public ProductVariant saveVariant(ProductVariant productVariant) {
         return repo.save(productVariant);
     }

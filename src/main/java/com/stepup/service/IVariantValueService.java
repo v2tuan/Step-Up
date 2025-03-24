@@ -18,6 +18,6 @@ public interface IVariantValueService {
     // Xóa giá trị biến thể theo ID
     void deleteVariantValue(Long id);
 
-    // Lấy danh sách sản phẩm theo giá trị biến thể (ID)
-    List<Product> getProductsByVariantValueId(Long variantValueId);
+//    // Lấy danh sách sản phẩm theo giá trị biến thể (ID)
+//    List<Product> getProductsByVariantValueId(Long variantValueId);
 }

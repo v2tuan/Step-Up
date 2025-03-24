@@ -32,8 +32,8 @@ public class VariantValueServiceImpl implements IVariantValueService {
             repo.deleteById(id);
     }
 
-    @Override
-    public List<Product> getProductsByVariantValueId(Long variantValueId) {
-        return repo.findProductsByVariantValueId(variantValueId);
-    }
+//    @Override
+//    public List<Product> getProductsByVariantValueId(Long variantValueId) {
+//        return repo.findProductsByVariantValueId(variantValueId);
+//    }
 }

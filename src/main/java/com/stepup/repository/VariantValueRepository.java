@@ -13,8 +13,8 @@ import java.util.List;
 public interface VariantValueRepository extends JpaRepository<VariantValue, Long> {
     List<VariantValue> findByVariantGroup_Id(Long groupId);
 
-    @Query("SELECT pv.product FROM ProductVariant pv JOIN pv.variantValues vv WHERE vv.id = :variantValueId")
-    List<Product> findProductsByVariantValueId(@Param("variantValueId") Long variantValueId);
+//    @Query("SELECT pv.product FROM ProductVariant pv JOIN pv.variantValues vv WHERE vv.id = :variantValueId")
+//    List<Product> findProductsByVariantValueId(@Param("variantValueId") Long variantValueId);
 
 
 }

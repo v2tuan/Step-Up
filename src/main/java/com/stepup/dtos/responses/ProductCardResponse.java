@@ -1,5 +1,6 @@
 package com.stepup.dtos.responses;
 
+import com.stepup.entity.Color;
 import com.stepup.entity.ProductImage;
 import com.stepup.entity.ProductVariant;
 import com.stepup.entity.VariantGroup;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -24,10 +26,9 @@ public class ProductCardResponse {
 
     private Double price;
 
-    private Double promotionPrice;
+    private String ImageUrl;
 
-    @OneToMany(mappedBy = "product")
-    List<ProductImage> productImages;
+    private Double promotionPrice;
 
     private Double rating;
 }

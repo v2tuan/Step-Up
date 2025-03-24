@@ -6,25 +6,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class VariantValue {
+public class ColorImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String imageUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id")
+    @JoinColumn(name = "color_id")
     @JsonBackReference
-    private VariantGroup variantGroup;
-
-    private String name;
-
-//    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "variantValues")
-//    @JsonBackReference
-//    private List<ProductVariant> productVariants;
+    private Color color;
 }

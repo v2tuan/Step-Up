@@ -1,8 +1,8 @@
 package com.stepup.dtos.responses;
 
-import com.stepup.entity.ProductImage;
-import com.stepup.entity.ProductVariant;
-import com.stepup.entity.VariantGroup;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.stepup.entity.*;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -20,11 +21,20 @@ public class ProductResponse {
     private String slug;
     private String description;
     private boolean isActive;
-
     private Double price;
     private Double promotionPrice;
 
-    List<ProductImage> productImages;
-
     private String thumbnail;
+
+    private String video;
+
+    private Category category;
+
+    private List<Color> colors = new ArrayList<>();
+
+    private List<Size> sizes = new ArrayList<>();
+
+    private List<ProductVariant> productVariants = new ArrayList<>();
+
+    private Double rating;
 }
