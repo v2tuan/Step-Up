@@ -3,6 +3,7 @@ package com.stepup.controller;
 import com.stepup.dtos.requests.ProductDTO;
 import com.stepup.dtos.requests.ProductImageDTO;
 import com.stepup.dtos.responses.ProductCardResponse;
+import com.stepup.dtos.responses.ProductResponse;
 import com.stepup.dtos.responses.ResponseObject;
 import com.stepup.entity.Product;
 import com.stepup.entity.ProductImage;
@@ -40,10 +41,10 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public Product getProducts(@PathVariable Long id) {
+    public ProductResponse getProducts(@PathVariable Long id) {
         try {
             Product product = productService.getProductById(id).orElseThrow(() -> new RuntimeException("Product not found"));
-            return product;
+            return productMapper.toProductResponse(product);
         }
         catch (Exception e) {
             throw new RuntimeException(e);

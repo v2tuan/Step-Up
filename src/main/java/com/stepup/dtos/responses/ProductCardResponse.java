@@ -18,6 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductCardResponse {
+    private long id;
+
     private String name;
 
     private Double price;
