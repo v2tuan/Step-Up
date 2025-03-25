@@ -35,7 +35,7 @@ public class Product {
 
     private String video;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryId")
     @JsonManagedReference
     private Category category;
