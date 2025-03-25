@@ -1,6 +1,19 @@
 spring:
+  data:
+    redis:
+      #spring.data.redis.use-redis-cache
+      use-redis-cache: true
+      host: localhost # Default to 'localhost' if not provided
+      #host: ${REDIS_HOST:ubuntu-server-01.local} # Default to 'localhost' if not provided
+      port: 6379      # Default to 6379 if not provided
   application:
     name: StepUp
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
+#      use-redis-cache: true
+#      time-to-live: 60000  # Thời gian sống của cache (ms)
 
 #  datasource:
 #    url: jdbc:h2:mem:testdb

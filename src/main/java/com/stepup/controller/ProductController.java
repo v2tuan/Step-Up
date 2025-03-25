@@ -12,6 +12,7 @@ import com.stepup.entity.ColorImage;
 import com.stepup.entity.Product;
 import com.stepup.entity.ProductImage;
 import com.stepup.mapper.IProductMapper;
+import com.stepup.redis.ProductRedisService;
 import com.stepup.service.impl.ProductServiceImpl;
 import com.stepup.utils.FileUtils;
 import jakarta.validation.Valid;
@@ -35,6 +36,8 @@ public class ProductController {
     @Autowired
     private ProductServiceImpl productService;
     @Autowired
+    private ProductRedisService productRedisService;
+    @Autowired
     IProductMapper productMapper;
     @Value("${maximum_per_product}")
     private int maximumPerProduct;
@@ -49,8 +52,13 @@ public class ProductController {
     @GetMapping("/{id}")
     public ProductResponse getProducts(@PathVariable Long id) {
         try {
-            Product product = productService.getProductById(id).orElseThrow(() -> new RuntimeException("Product not found"));
-            return productMapper.toProductResponse(product);
+            ProductResponse productResponse = productRedisService.getProduct(id);
+            if(productResponse == null){
+                Product product = productService.getProductById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+                productResponse = productMapper.toProductResponse(product);
+                productRedisService.saveProducts(productResponse, id);
+            }
+            return productResponse;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
