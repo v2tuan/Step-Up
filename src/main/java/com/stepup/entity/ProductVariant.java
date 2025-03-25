@@ -23,17 +23,15 @@ public class ProductVariant {
     @JsonBackReference
     private Product product;
 
-    private String sku;
-    private int quantity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "color_id")
+    private Color color;
 
-    @ManyToMany
-    @JoinTable(
-            name = "productVariant_variantValue",
-            joinColumns = @JoinColumn(name = "productVariant_id"),
-            inverseJoinColumns = @JoinColumn(name = "variantValue_id")
-    )
-    @JsonManagedReference
-    private List<VariantValue> variantValues;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "size_id")
+    private Size size;
+
+    private int quantity;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "productVariant")
     private List<OrderItem> orderItem;

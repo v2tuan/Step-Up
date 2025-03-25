@@ -1,6 +1,7 @@
 package com.stepup.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -26,30 +27,28 @@ public class Product {
     private String name;
     private String slug;
     private String description;
-    //    private int quantity;
-//    private int sold;
     private boolean isActive;
-
     private Double price;
     private Double promotionPrice;
-
-    @JsonManagedReference
-    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
-    List<ProductImage> productImages;
 
     @Column(name = "thumbnail", length = 300)
     private String thumbnail;
 
     private String video;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryId")
-    @JsonManagedReference
+//    @JsonBackReference
+    @JsonIgnore
     private Category category;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<VariantGroup> variantGroups = new ArrayList<>();
+    private List<Color> colors = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Size> sizes = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
     @JsonManagedReference

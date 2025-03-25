@@ -12,9 +12,6 @@ public interface IProductVariantService {
     //  Lấy biến thể theo ID
     Optional<ProductVariant> getVariantById(Long variantId);
 
-    //  Tìm biến thể theo SKU
-    Optional<ProductVariant> getVariantBySku(String sku);
-
     //  Thêm hoặc cập nhật biến thể
     ProductVariant saveVariant(ProductVariant productVariant);
 

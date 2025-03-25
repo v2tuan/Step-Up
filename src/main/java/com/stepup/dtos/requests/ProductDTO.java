@@ -16,7 +16,9 @@ public class ProductDTO {
     private long categoryId;
 
     // Thông tin phân loại
-    private List<VariantGroupDTO> variantGroups;
+    private List<String> colors;
+
+    private List<String> sizes;
 
     // Thông tin giá và số lượng của từng biến thể
     private List<VariantDetailDTO> variants;

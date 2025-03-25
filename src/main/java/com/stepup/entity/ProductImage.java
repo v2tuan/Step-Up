@@ -19,8 +19,8 @@ public class ProductImage {
 
     private String imageUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "product_id")
-    @JsonBackReference
-    private Product product;
+//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+//    @JoinColumn(name = "product_id")
+//    @JsonBackReference
+//    private Product product;
 }
