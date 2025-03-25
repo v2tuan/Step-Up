@@ -20,6 +20,7 @@ import java.util.List;
 @NotEmpty
 @Service
 public class ProductRedisService {
+    // gọi các bean
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper redisObjectMapper;
 

@@ -1,10 +1,12 @@
 package com.stepup.controller;
 
 import com.stepup.dtos.requests.UserDTO;
+import com.stepup.dtos.requests.UserLoginDTO;
 import com.stepup.dtos.requests.VerifyAccountDTO;
 import com.stepup.dtos.responses.ResponseObject;
 import com.stepup.entity.User;
 import com.stepup.service.impl.UserServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -76,5 +79,11 @@ public class UserController {
         }
         userService.verifyUser(verifyAccountDTO);
         return ResponseEntity.ok("Account verified successfully");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody UserLoginDTO userLoginDTO, BindingResult result){
+        String token = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
+        return ResponseEntity.ok(Map.of("token", token));
     }
 }

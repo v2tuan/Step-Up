@@ -1,5 +1,6 @@
 package com.stepup.service.impl;
 
+import com.stepup.Enum.Role;
 import com.stepup.dtos.requests.UserDTO;
 import com.stepup.dtos.requests.VerifyAccountDTO;
 import com.stepup.entity.User;
@@ -7,7 +8,12 @@ import com.stepup.mapper.IUserMapper;
 import com.stepup.repository.UserRepository;
 import com.stepup.service.EmailService;
 import com.stepup.service.IUserService;
+import com.stepup.utils.JwtTokenUtil;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,6 +29,12 @@ public class UserServiceImpl implements IUserService {
     private EmailService emailService;
     @Autowired
     private IUserMapper userMapper;
+    @Autowired
+    PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     private UserRepository repo ;
 
@@ -82,13 +94,47 @@ public class UserServiceImpl implements IUserService {
     }
 
     public User createUser(UserDTO userDTO){
+        // Kiểm tra xem email của tài khoản đã tồn tại trong hệ thống chưa
+        if(userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new RuntimeException("Email đã tồn tại trên một tài khoản khác.");
+        }
         User newUser = userMapper.toUser(userDTO);
+        newUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+
         newUser.setVerificationCode(generateVerificationCode());
         newUser.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
         newUser.setEnabled(false);
-
+        newUser.setRole(Role.CUSTOMER);
         sendVerificationEmail(newUser);
         return userRepository.save(newUser);
+    }
+
+    public String login(String email, String password){
+        Optional<User> optionalUserEntity = userRepository.findByEmail(email);
+
+        if (optionalUserEntity.isEmpty()) {
+            throw new RuntimeException("Invalid Email");
+        }
+
+        // Bước 3: Lấy tài khoản người dùng hiện tại từ đối tượng Optional.
+        User user = optionalUserEntity.get();
+
+        // Bước 4: Kiểm tra mật khẩu người dùng nhập vào có khớp với mật khẩu đã được mã hóa trong cơ sở dữ liệu hay không.
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Wrong Password"); // Nếu không khớp, ném ngoại lệ "Mật khẩu sai".
+        }
+
+        // Bước 5: Tạo đối tượng authenticationToken để chứa thông tin xác thực, bao gồm identifier (email/username) và các quyền của người dùng.
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                email, password,
+                user.getAuthorities() // Các quyền hạn của người dùng.
+        );
+
+        // Bước 6: Xác thực thông qua authenticationManager để kiểm tra tính hợp lệ của người dùng.
+        authenticationManager.authenticate(authenticationToken);
+
+        // Bước 7: Tạo và trả về JWT token cho người dùng sau khi xác thực thành công.
+        return jwtTokenUtil.generateToken(user);
     }
 
     public User verifyUser(VerifyAccountDTO input) {

@@ -66,3 +66,7 @@ maximum_per_product: 6
 
 api:
   prefix: /api/v1
+
+jwt:
+  secretKey: TaqlmGv1iEDMRiFp/pHuID1+T84IABfuA0xXh4GhiUI=
+  expiration: 3600  # 1 hour

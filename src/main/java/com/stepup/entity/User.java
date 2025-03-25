@@ -7,8 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Data
@@ -16,7 +21,19 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "\"user\"")
-public class User {
+public class User implements UserDetails {
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
+        authorityList.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return authorityList;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Giá trị khóa chính sẽ tự động tăng.
     private long id;
@@ -46,6 +63,7 @@ public class User {
     @Column(name = "verification_expiration")
     private LocalDateTime verificationCodeExpiresAt;
 
+    // Khi gọi authenticationManager.authenticate(authenticationToken);, Spring Security sẽ tự động kiểm tra isEnabled(), nếu false, nó sẽ ném ra ngoại lệ DisabledException.
     private boolean enabled;
 
     @CreationTimestamp // Tự động gán thời gian tạo bản ghi.
