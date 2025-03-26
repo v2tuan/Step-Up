@@ -36,7 +36,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             "/swagger-resources/**",
             "/webjars/**",
             "/api/v1/users/login",
-            "/api/v1/users/register"
+            "/api/v1/users/register",
+            "/api/v1/**" // Cần cấu hình lại sau cái này chỉ để test
     );
 
     @Override

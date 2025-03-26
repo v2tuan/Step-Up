@@ -1,4 +1,4 @@
-package com.stepup.redis;
+package com.stepup.service.redis;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
