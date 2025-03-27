@@ -1,6 +1,7 @@
 package com.stepup.service;
 
 import com.stepup.Enum.Status;
+import com.stepup.dtos.requests.OrderDTO;
 import com.stepup.entity.Order;
 
 import java.util.List;
@@ -33,4 +34,6 @@ public interface IOderService {
 
     //  Tính tổng doanh thu theo trạng thái đơn hàng
     Double getRevenueByStatus(Status status);
+
+    Order createOrder(OrderDTO orderDTO);
 }

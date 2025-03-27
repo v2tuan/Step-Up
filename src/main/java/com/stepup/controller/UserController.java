@@ -70,6 +70,8 @@ public class UserController {
     @PostMapping("/verify")
     public ResponseEntity<?> verifyUser(@RequestBody VerifyAccountDTO verifyAccountDTO
                         , BindingResult result) {
+        System.out.println("Received verification request for email: " + verifyAccountDTO.getEmail());
+        System.out.println("OTP provided: " + verifyAccountDTO.getVerificationCode());
         if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors()
                     .stream()
@@ -83,7 +85,32 @@ public class UserController {
                     .build());
         }
         userService.verifyUser(verifyAccountDTO);
-        return ResponseEntity.ok("Account verified successfully");
+        return ResponseEntity.ok(ResponseObject.builder()
+                .status(HttpStatus.CREATED)
+                .message("Account verified successfully")
+                .build());
+    }
+
+    @PostMapping("/resend-otp")
+    public ResponseEntity<ResponseObject> resendOtp(@RequestParam("email") String email) {
+        try {
+            userService.resendVerificationCode(email);
+            return ResponseEntity.ok(
+                    ResponseObject.builder()
+                            .status(HttpStatus.OK)
+                            .data(null)
+                            .message("Verification code has been resent successfully")
+                            .build()
+            );
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    ResponseObject.builder()
+                            .status(HttpStatus.BAD_REQUEST)
+                            .data(null)
+                            .message(e.getMessage())
+                            .build()
+            );
+        }
     }
 
     @PostMapping("/login")

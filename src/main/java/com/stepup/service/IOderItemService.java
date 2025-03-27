@@ -1,5 +1,7 @@
 package com.stepup.service;
 
+import com.stepup.dtos.requests.OrderItemDTO;
+import com.stepup.entity.Order;
 import com.stepup.entity.OrderItem;
 
 import java.util.List;
@@ -27,4 +29,6 @@ public interface IOderItemService {
 
     //  Tính tổng tiền của đơn hàng (có tính khuyến mãi)
     Double getTotalDiscountedPriceByOrderId(Long orderId);
+
+    List<OrderItem> createOrderItems(Order order, List<OrderItemDTO> orderItemDTOs);
 }
