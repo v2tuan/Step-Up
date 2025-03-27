@@ -59,6 +59,22 @@ spring:
         auth: true
         starttls.enable: true
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 118784967487-v1afkaool13r3h52tpj1dmrv623c62ql.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: "${GOOGLE_REDIRECT_URI:http://localhost:4300/auth/google/callback}"
+            scope: openid,profile,email
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+
 server:
   port: 8089
 

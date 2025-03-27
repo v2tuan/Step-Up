@@ -3,6 +3,7 @@ package com.stepup.entity;
 import com.stepup.Enum.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -19,6 +20,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "\"user\"")
 public class User implements UserDetails {
@@ -38,14 +40,18 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Giá trị khóa chính sẽ tự động tăng.
     private long id;
 
-    private String firstName;
-    private String lastName;
+    private String fullName;
+    @Column(name = "profile_image", length = 255)
+    private String profileImage;
     private String slug; // Chuỗi URL-friendly (thường dùng cho SEO).
     private String email;
     private String phone;
     private boolean isEmailActive; // Xác định email có được kích hoạt hay không.
     private boolean isPhoneActive; // Xác định số điện thoại có được kích hoạt hay không.
     private String password;
+
+    @Column(name = "google_account_id")
+    private String googleAccountId;
 
     @Enumerated(EnumType.STRING) // Lưu giá trị enum dưới dạng chuỗi trong cơ sở dữ liệu.
     private Role role;

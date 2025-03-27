@@ -1,31 +1,36 @@
 package com.stepup.controller;
 
+import ch.qos.logback.core.subst.Token;
 import com.stepup.dtos.requests.UserDTO;
 import com.stepup.dtos.requests.UserLoginDTO;
 import com.stepup.dtos.requests.VerifyAccountDTO;
+import com.stepup.dtos.responses.LoginResponse;
 import com.stepup.dtos.responses.ResponseObject;
 import com.stepup.entity.User;
+import com.stepup.service.impl.AuthService;
 import com.stepup.service.impl.UserServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
     @Autowired
     private UserServiceImpl userService;
+    @Autowired
+    private AuthService authService;
 
     @PostMapping("/register")
     //can we register an "admin" user ?
@@ -85,5 +90,93 @@ public class UserController {
     public ResponseEntity<?> login(@Valid @RequestBody UserLoginDTO userLoginDTO, BindingResult result){
         String token = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
         return ResponseEntity.ok(Map.of("token", token));
+    }
+
+    //Android, bấm đăng nhập gg, redirect đến trang đăng nhập google, đăng nhập xong có "code"
+    //Từ "code" => google token => lấy ra các thông tin khác
+    @GetMapping("/auth/social-login")
+    public ResponseEntity<String> socialAuth(
+            @RequestParam("login_type") String loginType,
+            HttpServletRequest request
+    ){
+        //request.getRequestURI()
+        loginType = loginType.trim().toLowerCase();  // Loại bỏ dấu cách và chuyển thành chữ thường
+        String url = authService.generateAuthUrl();
+        return ResponseEntity.ok(url);
+    }
+
+    @GetMapping("/auth/social/callback")
+    public ResponseEntity<ResponseObject> callback(
+            @RequestParam("code") String code,
+            HttpServletRequest request
+    ) throws Exception {
+        // Call the AuthService to get user info
+        Map<String, Object> userInfo = authService.authenticateAndFetchProfile(code);
+
+        if (userInfo == null) {
+            return ResponseEntity.badRequest().body(new ResponseObject(
+                    "Failed to authenticate", HttpStatus.BAD_REQUEST, null
+            ));
+        }
+
+        // Extract user information from userInfo map
+
+        String accountId = (String) Objects.requireNonNullElse(userInfo.get("sub"), "");
+        String name = (String) Objects.requireNonNullElse(userInfo.get("name"), "");
+        String picture = (String) Objects.requireNonNullElse(userInfo.get("picture"), "");
+        String email = (String) Objects.requireNonNullElse(userInfo.get("email"), "");
+
+        // Tạo đối tượng UserLoginDTO
+        UserLoginDTO userLoginDTO = UserLoginDTO.builder()
+                .email(email)
+                .fullname(name)
+                .password("")
+                .phoneNumber("")
+                .profileImage(picture)
+                .build();
+
+
+        userLoginDTO.setGoogleAccountId(accountId);
+
+        return this.loginSocial(userLoginDTO, request);
+    }
+
+    private ResponseEntity<ResponseObject> loginSocial(
+            @Valid @RequestBody UserLoginDTO userLoginDTO,
+            HttpServletRequest request
+    ) throws Exception {
+        // Gọi hàm loginSocial từ UserService cho đăng nhập mạng xã hội
+        String token = userService.loginSocial(userLoginDTO);
+
+        // Xử lý token và thông tin người dùng
+        String userAgent = request.getHeader("User-Agent");
+        User userDetail = userService.getUserDetailsFromToken(token);
+//        Token jwtToken = tokenService.addToken(userDetail, token, isMobileDevice(userAgent));
+//
+//        // Tạo đối tượng LoginResponse
+//        LoginResponse loginResponse = LoginResponse.builder()
+//                .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY))
+//                .token(jwtToken.getToken())
+//                .tokenType(jwtToken.getTokenType())
+//                .refreshToken(jwtToken.getRefreshToken())
+//                .username(userDetail.getUsername())
+//                .roles(userDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+//                .id(userDetail.getId())
+//                .build();
+
+        // Trả về phản hồi
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .message("Login successfully")
+                        .data(token)
+                        .status(HttpStatus.OK)
+                        .build()
+        );
+    }
+
+    private boolean isMobileDevice(String userAgent) {
+        // Kiểm tra User-Agent header để xác định thiết bị di động
+        // Ví dụ đơn giản:
+        return userAgent.toLowerCase().contains("mobile");
     }
 }

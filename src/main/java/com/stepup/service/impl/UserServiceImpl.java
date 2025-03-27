@@ -2,6 +2,7 @@ package com.stepup.service.impl;
 
 import com.stepup.Enum.Role;
 import com.stepup.dtos.requests.UserDTO;
+import com.stepup.dtos.requests.UserLoginDTO;
 import com.stepup.dtos.requests.VerifyAccountDTO;
 import com.stepup.entity.User;
 import com.stepup.mapper.IUserMapper;
@@ -198,4 +199,54 @@ public class UserServiceImpl implements IUserService {
     }
 
 
+    public String loginSocial(UserLoginDTO userLoginDTO) throws Exception {
+        Optional<User> optionalUser = Optional.empty();
+//        Role roleUser = roleRepository.findByName(Role.USER)
+//                .orElseThrow(() -> new DataNotFoundException(
+//                        localizationUtils.getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXISTS)));
+
+        // Kiểm tra Google Account ID
+        if (userLoginDTO.isGoogleAccountIdValid()) {
+            optionalUser = userRepository.findByGoogleAccountId(userLoginDTO.getGoogleAccountId());
+
+            // Tạo người dùng mới nếu không tìm thấy
+            if (optionalUser.isEmpty()) {
+                User newUser = User.builder()
+                        .fullName(Optional.ofNullable(userLoginDTO.getFullname()).orElse(""))
+                        .email(Optional.ofNullable(userLoginDTO.getEmail()).orElse(""))
+                        .profileImage(Optional.ofNullable(userLoginDTO.getProfileImage()).orElse(""))
+                        .role(Role.CUSTOMER)
+                        .googleAccountId(userLoginDTO.getGoogleAccountId())
+                        .password("") // Mật khẩu trống cho đăng nhập mạng xã hội
+                        .enabled(true)
+                        .build();
+
+                // Lưu người dùng mới
+                newUser = userRepository.save(newUser);
+                optionalUser = Optional.of(newUser);
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid social account information.");
+        }
+
+        User user = optionalUser.get();
+
+        // Kiểm tra nếu tài khoản bị khóa
+//        if (!user.isActive()) {
+//            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_IS_LOCKED));
+//        }
+
+        // Tạo JWT token cho người dùng
+        return jwtTokenUtil.generateToken(user);
+    }
+
+    public User getUserDetailsFromToken(String token) throws Exception {
+        if(jwtTokenUtil.isTokenExpired(token)) {
+            throw new RuntimeException("Token is expired");
+        }
+        String subject = jwtTokenUtil.extractEmail(token);
+        Optional<User> user;
+        user = userRepository.findByEmail(subject);
+        return user.orElseThrow(() -> new Exception("User not found"));
+    }
 }
