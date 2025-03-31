@@ -64,9 +64,9 @@ spring:
       client:
         registration:
           google:
-            client-id: 118784967487-v1afkaool13r3h52tpj1dmrv623c62ql.apps.googleusercontent.com
-            client-secret: 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
-            redirect-uri: "${GOOGLE_REDIRECT_URI:http://localhost:4300/auth/google/callback}"
+            client-id: 94795259707-gesvi3nivrc8mi24pmrq39d45vro2vi6.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: urn:ietf:wg:oauth:2.0:oob
             scope: openid,profile,email
         provider:
           google:

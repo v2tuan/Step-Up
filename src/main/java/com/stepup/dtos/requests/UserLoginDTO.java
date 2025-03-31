@@ -37,6 +37,12 @@ public class UserLoginDTO {
     @JsonProperty("fullname")
     private String fullname;
 
+    @JsonProperty("given_name ")
+    private String givenName;
+
+    @JsonProperty("family_name  ")
+    private String familyName;
+
     // Profile image URL, not mandatory, can be blank
     @JsonProperty("profile_image")
     private String profileImage;

@@ -1,5 +1,6 @@
 package com.stepup.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.stepup.Enum.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,6 +42,9 @@ public class User implements UserDetails {
     private long id;
 
     private String fullName;
+    private String givenName;
+    private String familyName;
+
     @Column(name = "profile_image", length = 255)
     private String profileImage;
     private String slug; // Chuỗi URL-friendly (thường dùng cho SEO).
