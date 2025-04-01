@@ -2,6 +2,7 @@ package com.stepup.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 public class CartItem {
     @Id
@@ -23,8 +25,8 @@ public class CartItem {
     private Cart cart;
 
     @OneToOne
-    @JoinColumn(name = "productId")
-    private Product product;
+    @JoinColumn(name = "productVariantId")
+    private ProductVariant productVariant;
 
     private int count;
 

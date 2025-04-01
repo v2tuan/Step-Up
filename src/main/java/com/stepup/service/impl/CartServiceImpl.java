@@ -1,15 +1,28 @@
 package com.stepup.service.impl;
 
+import com.stepup.dtos.requests.AddToCartDTO;
 import com.stepup.entity.Cart;
+import com.stepup.entity.CartItem;
+import com.stepup.entity.ProductVariant;
+import com.stepup.entity.User;
+import com.stepup.repository.CartItemRepository;
 import com.stepup.repository.CartRepository;
+import com.stepup.repository.ProductVariantRepository;
 import com.stepup.service.ICartService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CartServiceImpl implements ICartService {
+    @Autowired
     private CartRepository repo;
+    @Autowired
+    private ProductVariantRepository productVariantRepository;
+    @Autowired
+    private CartItemRepository cartItemRepository;
     @Override
     public Optional<Cart> getCartByUserId(Long userId) {
         return repo.findByUser_Id(userId);
@@ -23,5 +36,48 @@ public class CartServiceImpl implements ICartService {
     @Override
     public void deleteCartByUserId(Long userId) {
         repo.deleteByUser_Id(userId);
+    }
+
+    public List<CartItem> getCartItemByUser(User user) {
+        // Lấy giỏ hàng của người dùng hoặc tạo mới nếu chưa có
+        Cart cart = repo.findByUser_Id(user.getId()).orElseGet(() -> {
+            Cart newCart = new Cart();
+            newCart.setUser(user);
+            return repo.save(newCart);
+        });
+
+        return cartItemRepository.findByCart_Id(user.getId());
+    }
+
+    public String addToCart(User user, AddToCartDTO addToCartDTO) {
+        // Lấy giỏ hàng của người dùng hoặc tạo mới nếu chưa có
+        Cart cart = repo.findByUser_Id(user.getId()).orElseGet(() -> {
+            Cart newCart = new Cart();
+            newCart.setUser(user);
+            return repo.save(newCart);
+        });
+
+        // Tìm sản phẩm theo ID
+        Optional<ProductVariant> productVariantOpt = productVariantRepository.findById(addToCartDTO.getProductVariantId());
+        if (productVariantOpt.isEmpty()) {
+            return "Sản phẩm không tồn tại";
+        }
+
+        ProductVariant productVariant = productVariantOpt.get();
+
+        // Kiểm tra tồn kho
+        if (productVariant.getQuantity() < addToCartDTO.getQuantity()) {
+            return "Số lượng trong kho không đủ";
+        }
+
+        // Thêm sản phẩm vào giỏ hàng
+        CartItem cartItem = new CartItem();
+        cartItem.builder()
+                .cart(cart)
+                .productVariant(productVariant)
+                .count(addToCartDTO.getQuantity())
+                .build();
+        cartItemRepository.save(cartItem);
+        return "Thêm vào giỏ hàng thành công";
     }
 }
