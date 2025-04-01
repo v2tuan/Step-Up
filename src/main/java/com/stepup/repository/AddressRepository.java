@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AddressRepository   extends JpaRepository<Address, Long> {
@@ -16,5 +17,9 @@ public interface AddressRepository   extends JpaRepository<Address, Long> {
 
     //  Kiểm tra xem người dùng có địa chỉ nào chưa
     boolean existsByUser_Id(Long userId);
+
+
+    // Đếm số lượng địa chỉ của người dùng
+    long countByUser_Id(Long userId);
 
 }
