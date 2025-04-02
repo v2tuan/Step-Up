@@ -9,6 +9,7 @@ import com.stepup.repository.CartItemRepository;
 import com.stepup.repository.CartRepository;
 import com.stepup.repository.ProductVariantRepository;
 import com.stepup.service.ICartService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +47,7 @@ public class CartServiceImpl implements ICartService {
             return repo.save(newCart);
         });
 
-        return cartItemRepository.findByCart_Id(user.getId());
+        return cartItemRepository.findByCart_Id(cart.getId());
     }
 
     public String addToCart(User user, AddToCartDTO addToCartDTO) {
@@ -71,8 +72,7 @@ public class CartServiceImpl implements ICartService {
         }
 
         // Thêm sản phẩm vào giỏ hàng
-        CartItem cartItem = new CartItem();
-        cartItem.builder()
+        CartItem cartItem = CartItem.builder()
                 .cart(cart)
                 .productVariant(productVariant)
                 .count(addToCartDTO.getQuantity())

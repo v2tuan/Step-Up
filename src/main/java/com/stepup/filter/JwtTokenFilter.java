@@ -48,6 +48,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         // Bỏ qua xác thực nếu request thuộc danh sách bypassPaths
         for (String path : bypassPaths) {
+            if(new AntPathMatcher().match("/api/v1/cart/**", requestPath)) {
+                break;
+            }
             if (new AntPathMatcher().match(path, requestPath)) {
                 filterChain.doFilter(request, response);
                 return;

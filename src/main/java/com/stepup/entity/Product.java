@@ -30,8 +30,6 @@ public class Product {
     private String slug;
     private String description;
     private boolean isActive;
-    private Double price;
-    private Double promotionPrice;
 
     @Column(name = "thumbnail", length = 300)
     private String thumbnail;
