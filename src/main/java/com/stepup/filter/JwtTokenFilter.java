@@ -45,7 +45,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String requestPath = request.getServletPath();
-
         // Bỏ qua xác thực nếu request thuộc danh sách bypassPaths
         for (String path : bypassPaths) {
             if(new AntPathMatcher().match("/api/v1/cart/**", requestPath)) {

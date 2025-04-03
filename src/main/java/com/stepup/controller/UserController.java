@@ -224,6 +224,17 @@ public class UserController {
         return userAgent.toLowerCase().contains("mobile");
     }
 
+    @GetMapping("/check-token")
+    public ResponseEntity<String> checkToken(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+
+        if (userService.checkToken(token)) {
+            return ResponseEntity.ok("Valid");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+        }
+    }
+
     @GetMapping("/profile")
     public UserRespone profile(){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
