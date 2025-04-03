@@ -132,24 +132,31 @@ public class UserController {
         return ResponseEntity.ok(url);
     }
 
-    @GetMapping("/auth/social/callback")
-    public ResponseEntity<ResponseObject> callback(
+    @PostMapping("/auth/social/callback")
+    public String callback(
             @RequestParam("code") String code,
             HttpServletRequest request
     ) throws Exception {
         // Call the AuthService to get user info
         Map<String, Object> userInfo = authService.authenticateAndFetchProfile(code);
 
+//        if (userInfo == null) {
+//            return ResponseEntity.badRequest().body(new ResponseObject(
+//                    "Failed to authenticate", HttpStatus.BAD_REQUEST, null
+//            ));
+//        }
+
         if (userInfo == null) {
-            return ResponseEntity.badRequest().body(new ResponseObject(
-                    "Failed to authenticate", HttpStatus.BAD_REQUEST, null
-            ));
+            return
+                    "Failed to authenticate";
         }
 
         // Extract user information from userInfo map
 
         String accountId = (String) Objects.requireNonNullElse(userInfo.get("sub"), "");
         String name = (String) Objects.requireNonNullElse(userInfo.get("name"), "");
+        String givenName = (String) Objects.requireNonNullElse(userInfo.get("given_name"), "");
+        String familyName = (String) Objects.requireNonNullElse(userInfo.get("family_name"), "");
         String picture = (String) Objects.requireNonNullElse(userInfo.get("picture"), "");
         String email = (String) Objects.requireNonNullElse(userInfo.get("email"), "");
 
@@ -157,6 +164,8 @@ public class UserController {
         UserLoginDTO userLoginDTO = UserLoginDTO.builder()
                 .email(email)
                 .fullname(name)
+                .givenName(givenName)
+                .familyName(familyName)
                 .password("")
                 .phoneNumber("")
                 .profileImage(picture)
@@ -165,10 +174,11 @@ public class UserController {
 
         userLoginDTO.setGoogleAccountId(accountId);
 
-        return this.loginSocial(userLoginDTO, request);
+//        return this.loginSocial(userLoginDTO, request).getBody().getData();
+        return loginSocial(userLoginDTO, request);
     }
 
-    private ResponseEntity<ResponseObject> loginSocial(
+    private String loginSocial(
             @Valid @RequestBody UserLoginDTO userLoginDTO,
             HttpServletRequest request
     ) throws Exception {
@@ -192,13 +202,14 @@ public class UserController {
 //                .build();
 
         // Trả về phản hồi
-        return ResponseEntity.ok().body(
-                ResponseObject.builder()
-                        .message("Login successfully")
-                        .data(token)
-                        .status(HttpStatus.OK)
-                        .build()
-        );
+//        return ResponseEntity.ok().body(
+//                ResponseObject.builder()
+//                        .message("Login successfully")
+//                        .data(token)
+//                        .status(HttpStatus.OK)
+//                        .build()
+//        );
+        return token;
     }
 
     private boolean isMobileDevice(String userAgent) {

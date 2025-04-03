@@ -1,6 +1,8 @@
-package com.stepup.entity;
+package com.stepup.dtos.responses;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.stepup.entity.Cart;
+import com.stepup.entity.ProductVariant;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,28 +14,15 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@Entity
-public class CartItem {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CartItemRespone {
     private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "cartId")
-    @JsonIgnore
-    private Cart cart;
+    private String title;
 
-    @OneToOne
-    @JoinColumn(name = "productVariantId")
     private ProductVariant productVariant;
 
     private int count;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 }

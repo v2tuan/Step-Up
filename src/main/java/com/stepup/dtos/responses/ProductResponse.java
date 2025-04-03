@@ -28,8 +28,6 @@ public class ProductResponse {
 
     private String video;
 
-    private Category category;
-
     private List<Color> colors = new ArrayList<>();
 
     private List<Size> sizes = new ArrayList<>();
