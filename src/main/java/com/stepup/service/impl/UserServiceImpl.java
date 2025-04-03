@@ -10,6 +10,7 @@ import com.stepup.repository.UserRepository;
 import com.stepup.service.EmailService;
 import com.stepup.service.IUserService;
 import com.stepup.utils.JwtTokenUtil;
+import io.jsonwebtoken.Claims;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -248,5 +249,17 @@ public class UserServiceImpl implements IUserService {
         Optional<User> user;
         user = userRepository.findByEmail(subject);
         return user.orElseThrow(() -> new Exception("User not found"));
+    }
+
+    public boolean checkToken(String token) {
+        try {
+            // Kiểm tra token có hết hạn không
+            if (jwtTokenUtil.isTokenExpired(token)) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
