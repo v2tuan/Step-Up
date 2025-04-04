@@ -40,4 +40,15 @@ public class CartController {
             throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống"); // Trường hợp không có người dùng đăng nhập
         }
     }
+
+    @PostMapping("/remove/{id}")
+    public String removeCartItem(@PathVariable("id") long cartItemId) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            User user = (User) principal;
+            return cartService.removeFromCart(user, cartItemId);
+        } else {
+            throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống"); // Trường hợp không có người dùng đăng nhập
+        }
+    }
 }
