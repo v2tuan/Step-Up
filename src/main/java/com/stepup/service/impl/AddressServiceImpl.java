@@ -1,5 +1,6 @@
 package com.stepup.service.impl;
 
+import com.stepup.entity.User;
 import com.stepup.service.IAddressService;
 
 import com.stepup.dtos.requests.AddressDTO;
@@ -27,7 +28,7 @@ public class AddressServiceImpl  implements IAddressService {
     public List<AddressDTO> getAddressesByUserId(Long userId) {
         List<Address> addresses = repo.findByUser_Id(userId);
         return addresses.stream()
-                .map(addr -> new AddressDTO(addr.getId(),addr.getUser().getFullName(), addr.getPhone(), addr.getAddr(), addr.getUser().getId()))
+                .map(addr -> new AddressDTO(addr.getId(),addr.getFullName(), addr.getPhone(), addr.getAddr(), addr.getUser().getId()))
                 .collect(Collectors.toList());
     }
 
@@ -37,6 +38,7 @@ public class AddressServiceImpl  implements IAddressService {
         address.setPhone(addressDTO.getPhone());
         address.setAddr(addressDTO.getAddress());
         address.setFullName(addressDTO.getFullName());
+
         // Tìm user từ userRepo
         userRepo.findById(addressDTO.getUserId()).ifPresentOrElse(
                 user -> {
@@ -92,4 +94,14 @@ public class AddressServiceImpl  implements IAddressService {
         return repo.save(address);
     }
 
+    public boolean setDefaultAddress(Long addressId, long UserID) {
+        Address address = repo.findById(addressId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ với ID: " + addressId));
+        User user = userRepo.findById(UserID)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
+        // Đặt địa chỉ mặc định
+        user.setDefaultAddress(address);
+        userRepo.save(user);
+        return true;
+    }
 }

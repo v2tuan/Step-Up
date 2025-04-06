@@ -3,17 +3,19 @@ package com.stepup.controller;
 import com.stepup.dtos.requests.AddressDTO;
 import com.stepup.dtos.responses.ResponseObject;
 import com.stepup.entity.Address;
+import com.stepup.entity.User;
 import com.stepup.service.impl.AddressServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -44,14 +46,21 @@ public class AddressController {
         }
 
         try {
-            Address newAddress = addressService.saveAddress(address);
-            return ResponseEntity.ok(
-                    ResponseObject.builder()
-                            .message("Created new address successfully")
-                            .status(HttpStatus.OK)
-                            .data(newAddress)
-                            .build()
-            );
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal instanceof UserDetails) {
+                User user = (User) principal;
+                address.setUserId(user.getId());
+                Address newAddress = addressService.saveAddress(address);
+                return ResponseEntity.ok(
+                        ResponseObject.builder()
+                                .message("Created new address successfully")
+                                .status(HttpStatus.OK)
+                                .data(null)
+                                .build()
+                );
+            } else {
+                throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống");
+            }
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
@@ -63,38 +72,36 @@ public class AddressController {
             );
         }
     }
-  // lấy danh sách địa chỉ theo user
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<?> getAddressesByUserId(@PathVariable Long userId) {
+
+    @GetMapping("/user/addresses")
+    public ResponseEntity<Map<String, Object>> getAddressesByUserId() {
         try {
-            List<AddressDTO> addresses = addressService.getAddressesByUserId(userId);
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal instanceof UserDetails) {
+                User user = (User) principal;
+                Long userId = user.getId();
 
-            if (addresses.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ResponseObject.builder()
-                                .message("Không tìm thấy địa chỉ nào cho User ID: " + userId)
-                                .status(HttpStatus.NOT_FOUND)
-                                .data(null)
-                                .build()
-                );
+                // Lấy danh sách địa chỉ
+                List<AddressDTO> addresses = addressService.getAddressesByUserId(userId);
+
+                // Tạo dữ liệu phản hồi
+                Map<String, Object> responseData = new HashMap<>();
+                responseData.put("addresses", addresses != null ? addresses : Collections.emptyList());
+                responseData.put("defaultAddressId", user.getDefaultAddress() != null ? user.getDefaultAddress().getId() : null);
+
+                if (addresses == null || addresses.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+                }
+
+                return ResponseEntity.ok(responseData);
+            } else {
+                throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống");
             }
-
-            return ResponseEntity.ok(
-                    ResponseObject.builder()
-                            .message("Lấy danh sách địa chỉ thành công")
-                            .status(HttpStatus.OK)
-                            .data(addresses)
-                            .build()
-            );
-
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ResponseObject.builder()
-                            .message("Đã xảy ra lỗi: " + e.getMessage())
-                            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .data(null)
-                            .build()
-            );
+            Map<String, Object> errorData = new HashMap<>();
+            errorData.put("addresses", Collections.emptyList());
+            errorData.put("defaultAddressId", null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorData);
         }
     }
 
@@ -208,6 +215,47 @@ public class AddressController {
                                 .data(null)
                                 .build()
                 );
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ResponseObject.builder()
+                            .message("Đã xảy ra lỗi: " + e.getMessage())
+                            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .data(null)
+                            .build()
+            );
+        }
+    }
+    @PutMapping("/set-default/{id}")
+    public ResponseEntity<?> setDefaultAddress(@PathVariable Long id) {
+        try {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal instanceof UserDetails) {
+                User user = (User) principal;
+                Long userId = user.getId();
+                boolean isSet = addressService.setDefaultAddress(id, userId);
+                if(isSet)
+                {
+                    return ResponseEntity.ok(
+                            ResponseObject.builder()
+                                    .message("Đặt địa chỉ mặc định thành công")
+                                    .status(HttpStatus.OK)
+                                    .data(null)
+                                    .build()
+                    );
+
+                 } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        ResponseObject.builder()
+                                .message("Không tìm thấy địa chỉ với ID: " + id)
+                                .status(HttpStatus.NOT_FOUND)
+                                .data(null)
+                                .build()
+                );
+            }
+            } else {
+                throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống");
             }
 
         } catch (Exception e) {

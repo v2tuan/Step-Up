@@ -1,5 +1,6 @@
 package com.stepup.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.stepup.Enum.Role;
 import jakarta.persistence.*;
@@ -62,6 +63,12 @@ public class User implements UserDetails {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user") // Dùng để lưu danh sách các giá trị đơn giản trong một bảng phụ.
     private List<Address> addresses;
+
+    // Thêm trường để lưu địa chỉ mặc định
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "default_address_id")
+    @JsonIgnore
+    private Address defaultAddress;
 
     @Lob // Lưu trữ dữ liệu lớn, thường là hình ảnh hoặc file.
     private byte[] avatar;
