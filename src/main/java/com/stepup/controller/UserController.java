@@ -6,7 +6,9 @@ import com.stepup.dtos.requests.UserLoginDTO;
 import com.stepup.dtos.requests.VerifyAccountDTO;
 import com.stepup.dtos.responses.LoginResponse;
 import com.stepup.dtos.responses.ResponseObject;
+import com.stepup.dtos.responses.UserRespone;
 import com.stepup.entity.User;
+import com.stepup.mapper.IUserMapper;
 import com.stepup.service.impl.AuthService;
 import com.stepup.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +35,8 @@ public class UserController {
     private UserServiceImpl userService;
     @Autowired
     private AuthService authService;
+    @Autowired
+    private IUserMapper userMapper;
 
     @PostMapping("/register")
     //can we register an "admin" user ?
@@ -226,6 +232,18 @@ public class UserController {
             return ResponseEntity.ok("Valid");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+        }
+    }
+
+    @GetMapping("/profile")
+    public UserRespone profile(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            User user = (User) principal;
+            UserRespone userRespone = userMapper.toUserRespone(user);
+            return userMapper.toUserRespone(user);
+        } else {
+            throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống"); // Trường hợp không có người dùng đăng nhập
         }
     }
 }

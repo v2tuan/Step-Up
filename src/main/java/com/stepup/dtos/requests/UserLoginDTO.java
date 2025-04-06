@@ -1,5 +1,6 @@
 package com.stepup.dtos.requests;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)  // Bỏ qua các trường không có trong DTO
 public class UserLoginDTO {
     @JsonProperty("phone_number")
     private String phoneNumber;

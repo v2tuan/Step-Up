@@ -64,16 +64,11 @@ public class User implements UserDetails {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user") // Dùng để lưu danh sách các giá trị đơn giản trong một bảng phụ.
     private List<Address> addresses;
 
-    // Thêm trường để lưu địa chỉ mặc định
+  // Thêm trường để lưu địa chỉ mặc định
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "default_address_id")
     @JsonIgnore
-    private Address defaultAddress;
-
-    @Lob // Lưu trữ dữ liệu lớn, thường là hình ảnh hoặc file.
-    private byte[] avatar;
-
-    private int points;
+    private Address defaultAddress;    private int points;
 
     @Column(name = "verification_code")
     private String verificationCode;

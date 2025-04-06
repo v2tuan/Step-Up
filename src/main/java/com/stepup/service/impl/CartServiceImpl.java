@@ -80,4 +80,23 @@ public class CartServiceImpl implements ICartService {
         cartItemRepository.save(cartItem);
         return "Thêm vào giỏ hàng thành công";
     }
+
+    public String removeFromCart(User user, long cartItemId) {
+        // Lấy giỏ hàng của người dùng hoặc tạo mới nếu chưa có
+        Cart cart = repo.findByUser_Id(user.getId()).orElseGet(() -> {
+            Cart newCart = new Cart();
+            newCart.setUser(user);
+            return repo.save(newCart);
+        });
+
+        // Tìm Cart Item theo ID
+        Optional<CartItem> optionalCartItem = cartItemRepository.findById(cartItemId);
+        if (optionalCartItem.isEmpty()) {
+            return "Cart Item không tồn tại";
+        }
+
+        CartItem cartItem = optionalCartItem.get();
+        cartItemRepository.deleteById(cartItem.getId());
+        return "Xóa sản phẩm khỏi giỏ hàng thành công";
+    }
 }
