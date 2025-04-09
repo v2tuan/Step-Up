@@ -104,4 +104,11 @@ public class AddressServiceImpl  implements IAddressService {
         userRepo.save(user);
         return true;
     }
+
+//    public Address getDefaultAddress(Long userId) {
+//        List<Address> addresses = repo.findByUser_Id(userId);
+//        for (Address address : addresses) {
+//            if(address.get)
+//        }
+//    }
 }

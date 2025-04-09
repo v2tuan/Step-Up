@@ -1,6 +1,7 @@
 package com.stepup.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.stepup.Enum.Attribute;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +25,8 @@ public class CouponCondition {
     private Coupon coupon;
 
     @Column(name = "attribute", nullable = false)
-    private String attribute;
+    @Enumerated(EnumType.STRING) // Lưu giá trị enum dưới dạng chuỗi trong cơ sở dữ liệu.
+    private Attribute attribute;
 
     @Column(name = "value", nullable = false)
     private String value;

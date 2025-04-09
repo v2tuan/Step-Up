@@ -4,7 +4,9 @@ import com.stepup.dtos.requests.AddressDTO;
 import com.stepup.dtos.responses.ResponseObject;
 import com.stepup.entity.Address;
 import com.stepup.entity.User;
+import com.stepup.mapper.IAddressMapper;
 import com.stepup.service.impl.AddressServiceImpl;
+import com.stepup.service.impl.UserServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +26,10 @@ import java.util.stream.Collectors;
 public class AddressController {
     @Autowired
     private AddressServiceImpl addressService;
+    @Autowired
+    private UserServiceImpl userService;
+    @Autowired
+    private IAddressMapper addressMapper;
 
     // 🟢 1. API Tạo Địa Chỉ Mới
     @PostMapping
@@ -227,6 +234,7 @@ public class AddressController {
             );
         }
     }
+
     @PutMapping("/set-default/{id}")
     public ResponseEntity<?> setDefaultAddress(@PathVariable Long id) {
         try {
@@ -235,8 +243,7 @@ public class AddressController {
                 User user = (User) principal;
                 Long userId = user.getId();
                 boolean isSet = addressService.setDefaultAddress(id, userId);
-                if(isSet)
-                {
+                if (isSet) {
                     return ResponseEntity.ok(
                             ResponseObject.builder()
                                     .message("Đặt địa chỉ mặc định thành công")
@@ -245,15 +252,15 @@ public class AddressController {
                                     .build()
                     );
 
-                 } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        ResponseObject.builder()
-                                .message("Không tìm thấy địa chỉ với ID: " + id)
-                                .status(HttpStatus.NOT_FOUND)
-                                .data(null)
-                                .build()
-                );
-            }
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                            ResponseObject.builder()
+                                    .message("Không tìm thấy địa chỉ với ID: " + id)
+                                    .status(HttpStatus.NOT_FOUND)
+                                    .data(null)
+                                    .build()
+                    );
+                }
             } else {
                 throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống");
             }
@@ -267,5 +274,25 @@ public class AddressController {
                             .build()
             );
         }
+    }
+
+    @GetMapping("/get-default")
+    @Transactional
+    public ResponseEntity<?> getDefaultAddress() {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal instanceof UserDetails) {
+                User user = userService.getUserByEmail(((User) principal).getEmail()).orElseThrow(() -> new EntityNotFoundException("User not found"));
+//                Long userId = user.getId();
+                Address defaultAddress = user.getDefaultAddress();
+                return ResponseEntity.ok(
+                        ResponseObject.builder()
+                                .message("Lấy địa chỉ mặc định thành công")
+                                .status(HttpStatus.OK)
+                                .data(addressMapper.toAddressResponse(defaultAddress))
+                                .build()
+                );
+            } else {
+                throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống");
+            }
     }
 }

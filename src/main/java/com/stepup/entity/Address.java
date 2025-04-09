@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "Address")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) //  Ép Hibernate tải đối tượng trước khi trả về JSON
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +24,10 @@ public class Address {
     private String addr;
     private String phone;
 
-    @OneToMany(mappedBy = "address", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "address",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId") // Cột accId trong bảng Address
     @JsonIgnoreProperties("addresses")
     private User user;

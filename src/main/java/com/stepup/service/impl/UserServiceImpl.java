@@ -37,7 +37,7 @@ public class UserServiceImpl implements IUserService {
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
-
+    @Autowired
     private UserRepository repo ;
 
     @Override
