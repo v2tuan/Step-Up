@@ -21,8 +21,6 @@ public class ProductResponse {
     private String slug;
     private String description;
     private boolean isActive;
-    private Double price;
-    private Double promotionPrice;
 
     private String thumbnail;
 
