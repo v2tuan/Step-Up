@@ -36,7 +36,7 @@ public class AddressServiceImpl  implements IAddressService {
     public Address saveAddress(AddressDTO addressDTO) {
         Address address = new Address();
         address.setPhone(addressDTO.getPhone());
-        address.setAddr(addressDTO.getAddress());
+        address.setAddr(addressDTO.getAddr());
         address.setFullName(addressDTO.getFullName());
 
         // Tìm user từ userRepo
@@ -89,7 +89,7 @@ public class AddressServiceImpl  implements IAddressService {
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy Address với ID: " + id));
         updatedAddress.setId(id);
         address.setPhone(updatedAddress.getPhone());
-        address.setAddr(updatedAddress.getAddress());
+        address.setAddr(updatedAddress.getAddr());
         address.setFullName(updatedAddress.getFullName());
         return repo.save(address);
     }

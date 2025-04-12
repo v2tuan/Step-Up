@@ -65,10 +65,12 @@ public class FavoriteServiceImpl implements IFavoriteService {
             fav.setUser(userRepo.findById(UserId).get());
             return favRepo.save(fav);
         });
-        Optional<ProductVariant> product = productVariantRepo.findById(favoriteDTO.getProductVariantId());
-        if(product.isEmpty()){
-            return "Sản phẩm không tồn tại hoặc đã bị xóa";
-        }
+        System.out.println("Product Optional: " + favoriteDTO.getProductVariantId());
+//        Optional<ProductVariant> product = productVariantRepo.findById(favoriteDTO.getProductVariantId());
+//        System.out.println("Product Optional: " + product);
+//        if(product.isEmpty()){
+//            return "Sản phẩm không tồn tại hoặc đã bị xóa";
+//        }
 
         FavoriteItem favoriteItem = new FavoriteItem();
         favoriteItem.setFavorite(favorite);

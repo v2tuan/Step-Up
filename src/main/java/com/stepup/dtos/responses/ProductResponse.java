@@ -1,5 +1,6 @@
 package com.stepup.dtos.responses;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.stepup.entity.*;
 import jakarta.persistence.*;
@@ -16,6 +17,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+//@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductResponse {
     private String name;
     private String slug;
@@ -35,4 +37,5 @@ public class ProductResponse {
     private List<ProductVariant> productVariants = new ArrayList<>();
 
     private Double rating;
+
 }
