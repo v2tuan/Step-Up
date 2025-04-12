@@ -1,6 +1,6 @@
 package com.stepup.service;
 
-import com.stepup.Enum.Status;
+import com.stepup.Enum.OrderShippingStatus;
 import com.stepup.dtos.requests.OrderDTO;
 import com.stepup.entity.Order;
 
@@ -18,13 +18,13 @@ public interface IOderService {
     List<Order> getOrdersByUserId(Long userId);
 
     //  Lấy danh sách đơn hàng theo trạng thái
-    List<Order> getOrdersByStatus(Status status);
+    List<Order> getOrdersByStatus(OrderShippingStatus status);
 
     //  Tạo mới hoặc cập nhật đơn hàng
     Order saveOrder(Order order);
 
     //  Cập nhật trạng thái đơn hàng
-    Order updateOrderStatus(Long orderId, Status status);
+    Order updateOrderStatus(Long orderId, OrderShippingStatus status);
 
     //  Xóa đơn hàng theo ID
     void deleteOrderById(Long orderId);
@@ -33,7 +33,7 @@ public interface IOderService {
     Double getTotalRevenue();
 
     //  Tính tổng doanh thu theo trạng thái đơn hàng
-    Double getRevenueByStatus(Status status);
+    Double getRevenueByStatus(OrderShippingStatus status);
 
     Order createOrder(OrderDTO orderDTO);
 }

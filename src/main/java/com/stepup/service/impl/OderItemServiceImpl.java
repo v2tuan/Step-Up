@@ -61,8 +61,8 @@ public class OderItemServiceImpl implements IOderItemService {
             orderItem.setOrder(order);
             orderItem.setProductVariant(productVariantRepository.findById(itemDTO.getProductVariantId()).orElse(null));
             orderItem.setCount(itemDTO.getCount());
-            orderItem.setPrice(itemDTO.getPrice());
-            orderItem.setDelivery(deliveryRepository.findById(itemDTO.getDeliveryId()).orElse(null));
+//            orderItem.setPrice(itemDTO.getPrice());
+//            orderItem.setDelivery(deliveryRepository.findById(itemDTO.getDeliveryId()).orElse(null));
             orderItem.setCreatedAt(LocalDateTime.now());
             orderItem.setUpdatedAt(LocalDateTime.now());
             return orderItem;
