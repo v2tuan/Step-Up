@@ -1,6 +1,6 @@
 package com.stepup.service.impl;
 
-import com.stepup.Enum.Status;
+import com.stepup.Enum.OrderShippingStatus;
 import com.stepup.dtos.requests.OrderDTO;
 import com.stepup.entity.Order;
 import com.stepup.repository.AddressRepository;
@@ -37,7 +37,7 @@ public class OderServiceImpl implements IOderService {
     }
 
     @Override
-    public List<Order> getOrdersByStatus(Status status) {
+    public List<Order> getOrdersByStatus(OrderShippingStatus status) {
         return repo.findByStatus(status);
     }
 
@@ -47,7 +47,7 @@ public class OderServiceImpl implements IOderService {
     }
 
     @Override
-    public Order updateOrderStatus(Long orderId, Status status) {
+    public Order updateOrderStatus(Long orderId, OrderShippingStatus status) {
         Optional<Order> orderOpt = repo.findById(orderId);
         if (orderOpt.isPresent()) {
             Order order = orderOpt.get();
@@ -64,29 +64,30 @@ public class OderServiceImpl implements IOderService {
 
     @Override
     public Double getTotalRevenue() {
-        return repo.getTotalRevenue();
+//        return repo.getTotalRevenue();
+        return 0.0;
     }
 
     @Override
-    public Double getRevenueByStatus(Status status) {
+    public Double getRevenueByStatus(OrderShippingStatus status) {
         return repo.getRevenueByStatus(status);
     }
 
     @Override
     public Order createOrder(OrderDTO orderDTO) {
         Order order = new Order();
-        order.setUser(userRepo.findById(orderDTO.getUserId()).orElse(null));
-        order.setAddress(addressRepo.findById(orderDTO.getAddressId()).orElse(null));
-        order.setStatus(Status.PENDING);
-        order.setIsPaidBefore(orderDTO.getIsPaidBefore());
-        order.setTotalPrice(orderDTO.getTotalPrice());
-        order.setCreatedAt(LocalDateTime.now());
-        order.setUpdatedAt(LocalDateTime.now());
-        // Lưu Order trước để có ID
-        order = repo.save(order);
-
-        // Gọi OrderItemService để tạo OrderItems
-        oderItemService.createOrderItems(order, orderDTO.getOrderItems());
+//        order.setUser(userRepo.findById(orderDTO.getUserId()).orElse(null));
+//        order.setAddress(addressRepo.findById(orderDTO.getAddressId()).orElse(null));
+//        order.setStatus(OrderShippingStatus.PENDING);
+//        order.setIsPaidBefore(orderDTO.getIsPaidBefore());
+//        order.setTotalPrice(orderDTO.getTotalPrice());
+//        order.setCreatedAt(LocalDateTime.now());
+//        order.setUpdatedAt(LocalDateTime.now());
+//        // Lưu Order trước để có ID
+//        order = repo.save(order);
+//
+//        // Gọi OrderItemService để tạo OrderItems
+//        oderItemService.createOrderItems(order, orderDTO.getOrderItems());
 
         return order;
     }

@@ -1,8 +1,9 @@
 package com.stepup.dtos.requests;
 
-import com.stepup.Enum.Status;
-import com.stepup.entity.Address;
-import com.stepup.entity.User;
+import com.stepup.Enum.OrderShippingStatus;
+import com.stepup.Enum.PaymentMethod;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -18,20 +19,13 @@ import java.util.List;
 @Builder
 @Valid
 public class OrderDTO {
-    @NotNull(message = "User ID is required")
-    private Long userId;
-
     @NotNull(message = "Address ID is required")
     private Long addressId;
 
-    @Builder.Default
-    private Status status = Status.PENDING;
+    private Long couponId;
 
-    @NotNull(message = "Payment status is required")
-    private Boolean isPaidBefore;
-
-    @NotNull(message = "Total price cannot be null")
-    private Double totalPrice;
+    @NotNull(message = "Payment Method ID is required")
+    private PaymentMethod paymentMethod;
 
     @Valid
     @NotNull(message = "Order items cannot be null")

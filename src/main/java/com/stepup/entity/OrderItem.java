@@ -1,5 +1,7 @@
 package com.stepup.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,15 +22,21 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orderId")
+    @JsonBackReference
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productVariant_id")
     private ProductVariant productVariant;
 
-    // giá ở đây dựa trên số lượng product và coupons
-    private double Price;
+    private Double price;
+
+    private Double promotionPrice;
+
+    // giá ở đây dựa trên số lượng product
     private int count;
+    private double shippingPrice;
+    private double discountPrice;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery")
@@ -40,4 +48,6 @@ public class OrderItem {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Column(name = "receive_date")
+    private LocalDateTime  receiveDate;
 }
