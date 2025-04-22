@@ -1,9 +1,8 @@
 package com.stepup.service;
 
-import com.stepup.dtos.requests.FavoriteItemDTO;
-import com.stepup.entity.Favorite;
-import com.stepup.entity.FavoriteItem;
-import com.stepup.entity.User;
+import com.stepup.dtos.requests.FavoriteDTO;
+
+import com.stepup.entity.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,8 +12,10 @@ public interface IFavoriteService {
     Optional<Favorite> getFavorite(int id);
     void deleteFavorite(Long id);
     Favorite saveFavorite(Favorite favorite);
-    Optional<Favorite> getFavoriteByUserId(Long userId);
-    List<FavoriteItem> getFavoriteItemByUser(User user);
-    String addtoFavorite (Long UserId, FavoriteItemDTO favoriteDTO);
+    List<Favorite> getFavoriteByUserId(Long userId);;
+    String addtoFavorite (Long UserId, FavoriteDTO favoriteDTO);
     String removefromFavorite (Long UserId, Long FavoriteItemId);
+    List<ProductVariant> getProducVarientByColorId(Long colorId);
+    Product getProductByColorId(Long colorId);
+    String deleteFavoriteByProduct(User user ,List<Color> color);
 }

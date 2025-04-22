@@ -19,4 +19,6 @@ public class ProductCardResponse {
     private Double promotionPrice;
 
     private Double rating;
+
+    private boolean fav;
 }

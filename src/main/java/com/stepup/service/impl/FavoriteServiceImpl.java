@@ -1,11 +1,8 @@
 package com.stepup.service.impl;
 
-import com.stepup.dtos.requests.FavoriteItemDTO;
-import com.stepup.entity.Favorite;
-import com.stepup.entity.FavoriteItem;
-import com.stepup.entity.ProductVariant;
-import com.stepup.entity.User;
-import com.stepup.repository.FavoriteItemRepository;
+import com.stepup.dtos.requests.FavoriteDTO;
+import com.stepup.entity.*;
+import com.stepup.repository.ColorRepository;
 import com.stepup.repository.FavoriteRepository;
 import com.stepup.repository.ProductVariantRepository;
 import com.stepup.repository.UserRepository;
@@ -14,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,78 +20,79 @@ public class FavoriteServiceImpl implements IFavoriteService {
     @Autowired
     private FavoriteRepository favRepo;
     @Autowired
-    private FavoriteItemRepository favItemRepo;
-    @Autowired
-    private ProductVariantRepository productVariantRepo;
-    @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private ColorRepository colorRepo;
+    @Autowired
+    private ProductVariantRepository productVariantRepository;
 
     @Override
     public Optional<Favorite> getFavorite(int id) {
-        return Optional.empty();
+        return getFavorite(id);
     }
 
     @Override
     public void deleteFavorite(Long id) {
-
+       favRepo.deleteById(id);
     }
 
     @Override
     public Favorite saveFavorite(Favorite favorite) {
-        return null;
+        return favRepo.save(favorite);
     }
 
     @Override
-    public Optional<Favorite> getFavoriteByUserId(Long userId) {
-        return Optional.empty();
+    public List<Favorite> getFavoriteByUserId(Long userId) {
+        List<Favorite> favorites = new ArrayList<>();
+        favorites = favRepo.findByUserId(userId);
+        return favorites;
     }
 
     @Override
-    public List<FavoriteItem> getFavoriteItemByUser(User user) {
-        Favorite favorite = favRepo.findByUserId(user.getId()).orElseGet(() ->{
-            Favorite fav = new Favorite();
-            fav.setUser(user);
-            return favRepo.save(fav);
-        });
-        return favItemRepo.findByFavoriteId(favorite.getId());
+    public String addtoFavorite(Long UserId, FavoriteDTO favoriteDTO) {
+        Favorite favorite =  new Favorite();
+        favorite.setUser(userRepo.findById(UserId).get());
+        favorite.setColor(colorRepo.getById(favoriteDTO.getColorId()));
+        favorite.setPrice(favoriteDTO.getPrice());
+        favRepo.save(favorite);
+        return "Add Favorite Successfully!";
     }
 
     @Override
-    public String addtoFavorite(Long UserId, FavoriteItemDTO favoriteDTO) {
-        Favorite favorite = favRepo.findByUserId(UserId).orElseGet(() -> {
-            Favorite fav = new Favorite();
-            fav.setUser(userRepo.findById(UserId).get());
-            return favRepo.save(fav);
-        });
-        System.out.println("Product Optional: " + favoriteDTO.getProductVariantId());
-//        Optional<ProductVariant> product = productVariantRepo.findById(favoriteDTO.getProductVariantId());
-//        System.out.println("Product Optional: " + product);
-//        if(product.isEmpty()){
-//            return "Sản phẩm không tồn tại hoặc đã bị xóa";
-//        }
-
-        FavoriteItem favoriteItem = new FavoriteItem();
-        favoriteItem.setFavorite(favorite);
-        favoriteItem.setProductVariant(productVariantRepo.findById(favoriteDTO.getProductVariantId()).get());
-        favoriteItem.setCreatedAt(LocalDateTime.now());
-        favItemRepo.save(favoriteItem);
-        return "Đã thêm sản phẩm vào danh mục yêu thích";
-    }
-
-    @Override
-    public String removefromFavorite(Long UserId, Long FavoriteItemId) {
-        Favorite favorite = favRepo.findByUserId(UserId).orElseGet(()->{
-            Favorite fav = new Favorite();
-            fav.setUser(userRepo.findById(UserId).get());
-            return favRepo.save(fav);
-        });
-
-        FavoriteItem favoriteItem = favItemRepo.findById(FavoriteItemId).orElse(null);
+    public String removefromFavorite(Long UserId, Long FavoriteId) {
+        Favorite favoriteItem = favRepo.findById(FavoriteId).orElse(null);
         if(favoriteItem == null){
-            return "Sản phẩm đã bị xóa hoặc không tồn tại ";
+            return "Product is Unavailable! ";
         }
-        favItemRepo.deleteById(FavoriteItemId);
-        return "Sản phẩm đã bị xóa thành công";
+        favRepo.deleteById(FavoriteId);
+        return "Remove Favorite Successfully!";
+    }
+
+    @Override
+    public List<ProductVariant> getProducVarientByColorId(Long colorId) {
+        return productVariantRepository.findByColor_Id(colorId);
+    }
+
+    @Override
+    public Product getProductByColorId(Long colorId) {
+        List<ProductVariant> productVariant = productVariantRepository.findByColor_Id(colorId);
+        if(productVariant == null){
+            return null;
+        }
+        else {
+            Product product = productVariant.getFirst().getProduct();
+            return product;
+        }
+    }
+
+    @Override
+    public String deleteFavoriteByProduct(User user, List<Color> color) {
+        for (Color c : color) {
+            Optional<Favorite> favorite = favRepo.findByUserAndColor(user, c);
+            favorite.ifPresent(favRepo::delete);
+        }
+        return "Removed from favorites successfully";
     }
 
 

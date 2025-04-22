@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, Long> {
     List<ProductVariant> findByProduct_Id(Long productId);
+    List<ProductVariant> findByColor_Id(Long colorId);
 }

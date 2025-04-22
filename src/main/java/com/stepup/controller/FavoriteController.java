@@ -1,11 +1,15 @@
 package com.stepup.controller;
-import com.stepup.dtos.requests.FavoriteItemDTO;
-import com.stepup.dtos.responses.FavoriteItemRespone;
-import com.stepup.entity.FavoriteItem;
-import com.stepup.entity.User;
+
+import com.stepup.dtos.requests.FavoriteDTO;
+import com.stepup.dtos.responses.FavoriteRespone;
+import com.stepup.entity.*;
 import com.stepup.mapper.IFavoriteMapper;
+import com.stepup.repository.ProductRepository;
+import com.stepup.repository.ProductVariantRepository;
 import com.stepup.service.impl.FavoriteServiceImpl;
+import com.stepup.service.impl.ProductServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -22,13 +26,18 @@ public class FavoriteController {
     @Autowired
     private IFavoriteMapper favoriteMapper;
 
+    @Autowired
+    private ProductServiceImpl productService;
+
+
+
     @GetMapping
-    public List<FavoriteItemRespone> getAllFavoriteItems() {
+    public List<FavoriteRespone> getAllFavoriteItems() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(principal instanceof UserDetails) {
             User user = (User) principal;
-            List<FavoriteItem> favoriteItems = favoriteService.getFavoriteItemByUser(user);
-            return favoriteMapper.toFavoriteItemRespone(favoriteItems);
+            List<Favorite> favorites = favoriteService.getFavoriteByUserId(user.getId());
+            return favoriteMapper.toFavoriteRespone(favorites);
         }else
         {
             throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống");
@@ -36,11 +45,31 @@ public class FavoriteController {
 
     }
     @PostMapping("/add")
-    public String addFavoriteItem(@RequestBody FavoriteItemDTO favoriteItemDTO) {
+    public String addFavoriteItem(@RequestBody FavoriteDTO favoriteDTO) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(principal instanceof UserDetails) {
             User user = (User) principal;
-            return favoriteService.addtoFavorite(user.getId(),favoriteItemDTO);
+            return favoriteService.addtoFavorite(user.getId(),favoriteDTO);
+        }
+        else
+        {
+            throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống");
+        }
+    }
+
+    @PostMapping("/add1")
+    public String addFavoriteItem(@RequestParam long ProductId) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof UserDetails) {
+            User user = (User) principal;
+            Product product = productService.getProductById(ProductId).orElseThrow(() -> new RuntimeException("Product not found"));
+            if (product.getColors() == null || product.getColors().isEmpty()) {
+                throw new RuntimeException("No colors found for this product");
+            }
+            FavoriteDTO favoriteDTO = new FavoriteDTO();
+            favoriteDTO.setColorId(product.getColors().get(0).getId());
+            favoriteDTO.setPrice(product.getProductVariants().getFirst().getPrice());
+            return favoriteService.addtoFavorite(user.getId(), favoriteDTO);
         }
         else
         {
@@ -49,7 +78,7 @@ public class FavoriteController {
     }
 
     @DeleteMapping("/remove/{id}")
-    public String removeFavoriteItem(@PathVariable Long favoriteItemId) {
+    public String removeFavoriteItem(@PathVariable("id") long favoriteItemId) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(principal instanceof UserDetails) {
             User user = (User) principal;
@@ -59,4 +88,71 @@ public class FavoriteController {
             throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống");
         }
     }
+
+    @DeleteMapping("/remove")
+    public String removeFavoriteItem1(@RequestParam long ProductId) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof UserDetails) {
+            User user = (User) principal;
+            Product product = productService.getProductById(ProductId).orElseThrow(() -> new RuntimeException("Product not found"));
+
+            if (product.getColors() == null || product.getColors().isEmpty()) {
+                throw new RuntimeException("No colors found for this product");
+            }
+            List<Color> colors = product.getColors();
+            return favoriteService.deleteFavoriteByProduct(user , colors);
+        }
+        else{
+            throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống");
+        }
+    }
+
+    @PostMapping("/addAlltoCart")
+    public String addFavoriteItemToCart(@RequestBody List<FavoriteDTO> favoriteDTO) {
+        Object  principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof UserDetails) {
+            User user = (User) principal;
+         //   return favoriteService.
+            return " Add All to Cart Succesfully!";
+        }
+        else
+        {
+            throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống ");
+        }
+
+    }
+
+    @GetMapping("/productVarient/{id}")
+    public List<ProductVariant> getProductVarientBycolorId(@PathVariable Long id) {
+        Object  principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof UserDetails) {
+            User user = (User) principal;
+            return favoriteService.getProducVarientByColorId(id);
+        }
+        else
+        {
+            throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống ");
+        }
+    }
+
+    @GetMapping("/productByColor/{id}")
+    public Product getProductByColorId(@PathVariable long id) {
+        Object  principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof UserDetails) {
+            User user = (User) principal;
+            Product product = favoriteService.getProductByColorId(id);
+
+            if (product == null) {
+                throw new RuntimeException("Product Null ");
+            }
+
+            return product;
+        }
+        else
+        {
+            throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống ");
+        }
+
+    }
+
 }

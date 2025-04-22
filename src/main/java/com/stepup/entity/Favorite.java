@@ -1,11 +1,14 @@
 package com.stepup.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,9 +20,14 @@ public class Favorite {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @OneToOne
+    @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "userId")
     User user;
 
-    int count ;
+    @ManyToOne
+    @JoinColumn(name="colorId")
+    Color color;
+
+    Double price;
 }

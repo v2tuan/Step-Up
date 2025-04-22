@@ -6,8 +6,10 @@ import com.stepup.dtos.requests.ProductDTO;
 import com.stepup.dtos.responses.ProductCardResponse;
 import com.stepup.dtos.responses.ProductResponse;
 import com.stepup.dtos.responses.ResponseObject;
+import com.stepup.entity.Favorite;
 import com.stepup.entity.Product;
 import com.stepup.mapper.IProductMapper;
+import com.stepup.service.impl.FavoriteServiceImpl;
 import com.stepup.service.redis.ProductRedisService;
 import com.stepup.service.impl.ProductServiceImpl;
 import jakarta.validation.Valid;
@@ -22,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -31,6 +35,8 @@ public class ProductController {
     @Autowired
     private ProductRedisService productRedisService;
     @Autowired
+    private FavoriteServiceImpl favoriteService;
+    @Autowired
     IProductMapper productMapper;
     @Value("${maximum_per_product}")
     private int maximumPerProduct;
@@ -38,7 +44,25 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<?> getAllProducts() {
         List<Product> products = productService.getAllProducts();
+        // test user
+        long userid = 39;
+        List<Favorite> favorites = favoriteService.getFavoriteByUserId(userid);
+        // lay danh sach color trong fave
+        Set<Long> favoriteColorIds = favorites.stream()
+                .map(fav -> fav.getColor().getId())
+                .collect(Collectors.toSet());
+
         List<ProductCardResponse> productCardResponses = productMapper.toProductCard(products);
+        // duyet qua tung phan tu, neu san pham co color nam trong list fav thi set fav true
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+            ProductCardResponse response = productCardResponses.get(i);
+
+            boolean isFav = product.getColors().stream()
+                    .anyMatch(color -> favoriteColorIds.contains(color.getId()));
+
+            response.setFav(isFav);
+        }
         return ResponseEntity.ok().body(productCardResponses);
     }
 

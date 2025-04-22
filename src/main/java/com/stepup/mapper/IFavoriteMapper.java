@@ -1,24 +1,22 @@
 package com.stepup.mapper;
 
-import com.stepup.dtos.responses.CartItemRespone;
-import com.stepup.dtos.responses.FavoriteItemRespone;
-import com.stepup.entity.CartItem;
-import com.stepup.entity.FavoriteItem;
+import com.stepup.dtos.responses.FavoriteRespone;
+import com.stepup.entity.Favorite;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
-import java.util.Optional;
 
 @Mapper (componentModel = "spring")
 public interface IFavoriteMapper {
 
-    @Mapping(target = "title", expression = "java(getTitle(favoriteItem))")
-    FavoriteItemRespone toFavoriteItemRespone(FavoriteItem favoriteItem); // ánh xạ từng CartItem
 
-    List<FavoriteItemRespone> toFavoriteItemRespone(List<FavoriteItem> favoriteItems);
+    @Mapping(target = "title", expression = "java(getTitle(favorite))")
+    FavoriteRespone toFavoriteRespone(Favorite favorite); // ánh xạ từng CartItem
 
-    default String getTitle(FavoriteItem favoriteItem) {
-        return favoriteItem.getProductVariant().getProduct().getName();
+    List<FavoriteRespone> toFavoriteRespone(List<Favorite> favorites);
+
+    default String getTitle(Favorite favorite) {
+        return  favorite.getColor().getProduct().getName();
     }
 }
