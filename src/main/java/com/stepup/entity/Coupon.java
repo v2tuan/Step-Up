@@ -27,4 +27,6 @@ public class Coupon {
     @OneToMany(mappedBy = "coupon", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<CouponCondition> couponConditionList;
+
+
 }

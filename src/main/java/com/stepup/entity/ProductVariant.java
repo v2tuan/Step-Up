@@ -1,6 +1,7 @@
 package com.stepup.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -38,5 +39,6 @@ public class ProductVariant {
     private int quantity;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "productVariant")
+    @JsonIgnore
     private List<OrderItem> orderItem;
 }

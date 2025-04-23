@@ -15,13 +15,13 @@ public interface OderRepository extends JpaRepository<Order, Long> {
     List<Order> findByAddress_Id(Long addressId);
 
     // Lấy danh sách đơn hàng theo trạng thái
-    List<Order> findByStatus(OrderShippingStatus status);
+//    List<Order> findByStatus(OrderShippingStatus status);
 
     // Tính tổng doanh thu của tất cả đơn hàng đã thanh toán
 //    @Query("SELECT COALESCE(SUM(o.totalPrice), 0) FROM Order o WHERE o.isPaidBefore = true")
 //    Double getTotalRevenue();
 
     // Tính tổng doanh thu theo trạng thái đơn hàng
-    @Query("SELECT COALESCE(SUM(o.totalPrice), 0) FROM Order o WHERE o.status = :status")
-    Double getRevenueByStatus(@Param("status") OrderShippingStatus status);
+//    @Query("SELECT COALESCE(SUM(o.totalPrice), 0) FROM Order o WHERE o.status = :status")
+//    Double getRevenueByStatus(@Param("status") OrderShippingStatus status);
 }

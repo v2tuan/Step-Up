@@ -38,8 +38,8 @@ public class Product {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryId")
-//    @JsonBackReference
-    @JsonIgnore
+    @JsonBackReference
+//    @JsonIgnore
     private Category category;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)

@@ -39,6 +39,6 @@ public class Category {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
-//    @JsonManagedReference
+    @JsonManagedReference
     private List<Product> products;
 }

@@ -25,10 +25,11 @@ public class Address {
     private String phone;
 
     @OneToMany(mappedBy = "address",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private List<Order> orders;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId") // Cột accId trong bảng Address
-    @JsonIgnoreProperties("addresses")
+    @JsonBackReference
     private User user;
 }
