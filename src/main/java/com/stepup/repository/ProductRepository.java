@@ -39,6 +39,16 @@ public interface ProductRepository  extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p ORDER BY p.createdAt DESC")
     List<Product> findLatestProducts(Pageable pageable);
 
+    @Query("SELECT p FROM Product p " +
+            "WHERE p.isActive = true " +
+            "AND (LOWER(p.category.name) LIKE CONCAT('%', :query, '%') " +
+            "OR LOWER(p.name) LIKE CONCAT('%', :query, '%')) " +
+            "ORDER BY " +
+            "CASE " +
+            "WHEN LOWER(p.category.name) LIKE CONCAT('%', :query, '%') THEN 2 " +
+            "WHEN LOWER(p.name) LIKE CONCAT('%', :query, '%') THEN 1 " +
+            "END")
+    List<Product> findBySearchQuery(@Param("query") String query);
     // Tìm sản phẩm theo danh mục và khoảng giá
 //    @Query("SELECT new com.stepup.model.ProductVariantDTO( " +
 //            "p.id, p.name, p.slug, p.description, p.thumbnail, p.category.id, " +

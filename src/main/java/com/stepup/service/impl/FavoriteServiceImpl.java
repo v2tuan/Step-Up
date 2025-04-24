@@ -50,17 +50,17 @@ public class FavoriteServiceImpl implements IFavoriteService {
     }
 
     @Override
-    public String addtoFavorite(Long UserId, FavoriteDTO favoriteDTO) {
+    public String addtoFavorite(User user, FavoriteDTO favoriteDTO) {
         Favorite favorite =  new Favorite();
-        favorite.setUser(userRepo.findById(UserId).get());
-        favorite.setColor(colorRepo.getById(favoriteDTO.getColorId()));
+        favorite.setUser(user);
+        favorite.setColor(colorRepo.getReferenceById(favoriteDTO.getColorId()));
         favorite.setPrice(favoriteDTO.getPrice());
         favRepo.save(favorite);
         return "Add Favorite Successfully!";
     }
 
     @Override
-    public String removefromFavorite(Long UserId, Long FavoriteId) {
+    public String removefromFavorite(Long FavoriteId) {
         Favorite favoriteItem = favRepo.findById(FavoriteId).orElse(null);
         if(favoriteItem == null){
             return "Product is Unavailable! ";
@@ -93,6 +93,13 @@ public class FavoriteServiceImpl implements IFavoriteService {
             favorite.ifPresent(favRepo::delete);
         }
         return "Removed from favorites successfully";
+    }
+
+    @Override
+    public Boolean checkFavorite(User user, long ColorId) {
+        Color c= colorRepo.getById(ColorId);
+        Optional<Favorite> favorite = favRepo.findByUserAndColor(user, c);
+        return favorite.isPresent();
     }
 
 

@@ -214,6 +214,11 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
+    public List<Product> searchProductsByQuery(String query) {
+        return repo.findBySearchQuery(query);
+    }
+
+    @Override
     public Optional<Product> getProductBySlug(String slug) {
         return repo.findBySlug(slug);
     }

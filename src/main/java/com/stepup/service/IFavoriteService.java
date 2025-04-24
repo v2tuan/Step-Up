@@ -13,9 +13,10 @@ public interface IFavoriteService {
     void deleteFavorite(Long id);
     Favorite saveFavorite(Favorite favorite);
     List<Favorite> getFavoriteByUserId(Long userId);;
-    String addtoFavorite (Long UserId, FavoriteDTO favoriteDTO);
-    String removefromFavorite (Long UserId, Long FavoriteItemId);
+    String addtoFavorite (User user, FavoriteDTO favoriteDTO);
+    String removefromFavorite (Long FavoriteItemId);
     List<ProductVariant> getProducVarientByColorId(Long colorId);
     Product getProductByColorId(Long colorId);
     String deleteFavoriteByProduct(User user ,List<Color> color);
+    Boolean checkFavorite(User user, long ColorId);
 }

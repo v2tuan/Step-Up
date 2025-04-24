@@ -26,6 +26,8 @@ public interface IProductService {
     //  Lấy sản phẩm theo ID
     Optional<Product> getProductById(Long productId);
 
+    List<Product> searchProductsByQuery(String query);
+
     //  Lấy sản phẩm theo Slug (SEO-friendly URL)
     Optional<Product> getProductBySlug(String slug);
 

@@ -49,7 +49,7 @@ public class FavoriteController {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(principal instanceof UserDetails) {
             User user = (User) principal;
-            return favoriteService.addtoFavorite(user.getId(),favoriteDTO);
+            return favoriteService.addtoFavorite(user,favoriteDTO);
         }
         else
         {
@@ -69,7 +69,7 @@ public class FavoriteController {
             FavoriteDTO favoriteDTO = new FavoriteDTO();
             favoriteDTO.setColorId(product.getColors().get(0).getId());
             favoriteDTO.setPrice(product.getProductVariants().getFirst().getPrice());
-            return favoriteService.addtoFavorite(user.getId(), favoriteDTO);
+            return favoriteService.addtoFavorite(user, favoriteDTO);
         }
         else
         {
@@ -82,7 +82,7 @@ public class FavoriteController {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(principal instanceof UserDetails) {
             User user = (User) principal;
-            return favoriteService.removefromFavorite(user.getId(),favoriteItemId);
+            return favoriteService.removefromFavorite(favoriteItemId);
         }
         else{
             throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống");
@@ -147,6 +147,20 @@ public class FavoriteController {
             }
 
             return product;
+        }
+        else
+        {
+            throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống ");
+        }
+
+    }
+
+    @GetMapping("/check")
+    public Boolean checkFav(@RequestParam("colorId") long ColorId){
+        Object  principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof UserDetails) {
+            User user = (User) principal;
+            return favoriteService.checkFavorite(user, ColorId);
         }
         else
         {
