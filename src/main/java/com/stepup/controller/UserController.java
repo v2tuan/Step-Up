@@ -75,7 +75,7 @@ public class UserController {
 
     @PostMapping("/verify")
     public ResponseEntity<?> verifyUser(@RequestBody VerifyAccountDTO verifyAccountDTO
-                        , BindingResult result) {
+            , BindingResult result) {
         System.out.println("Received verification request for email: " + verifyAccountDTO.getEmail());
         System.out.println("OTP provided: " + verifyAccountDTO.getVerificationCode());
         if (result.hasErrors()) {
@@ -120,7 +120,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody UserLoginDTO userLoginDTO, BindingResult result){
+    public ResponseEntity<?> login(@Valid @RequestBody UserLoginDTO userLoginDTO, BindingResult result) {
         String token = userService.login(userLoginDTO.getEmail(), userLoginDTO.getPassword());
         return ResponseEntity.ok(Map.of("token", token));
     }
@@ -131,7 +131,7 @@ public class UserController {
     public ResponseEntity<String> socialAuth(
             @RequestParam("login_type") String loginType,
             HttpServletRequest request
-    ){
+    ) {
         //request.getRequestURI()
         loginType = loginType.trim().toLowerCase();  // Loại bỏ dấu cách và chuyển thành chữ thường
         String url = authService.generateAuthUrl();
@@ -235,7 +235,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/profile")
+        @GetMapping("/profile")
     public UserRespone profile(){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails) {
@@ -246,4 +246,15 @@ public class UserController {
             throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống"); // Trường hợp không có người dùng đăng nhập
         }
     }
+//    @GetMapping("/profile")
+//    public User profile() {
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        if (principal instanceof UserDetails) {
+//            User user = (User) principal;
+//            UserRespone userRespone = userMapper.toUserRespone(user);
+//            return userService.getUserByEmail(user.getEmail()).orElse(null);
+//        } else {
+//            throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống"); // Trường hợp không có người dùng đăng nhập
+//        }
+//    }
 }

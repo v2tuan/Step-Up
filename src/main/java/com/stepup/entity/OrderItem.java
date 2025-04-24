@@ -2,6 +2,7 @@ package com.stepup.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.stepup.Enum.OrderShippingStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +26,9 @@ public class OrderItem {
     @JsonBackReference
     private Order order;
 
+    @Enumerated(EnumType.STRING)
+    private OrderShippingStatus status;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productVariant_id")
     private ProductVariant productVariant;
@@ -35,8 +39,10 @@ public class OrderItem {
 
     // giá ở đây dựa trên số lượng product
     private int count;
-    private double shippingPrice;
-    private double discountPrice;
+    private double shippingPrice = 0;
+    private double totalPrice;
+    private double subTotal;
+    private double discountPrice = 0;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery")

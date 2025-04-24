@@ -1,7 +1,8 @@
 package com.stepup.Enum;
 
 public enum PaymentStatus {
-    PAID,
     PENDING,
-    ERRORED
+    COMPLETED,
+    FAILED,
+    REFUNDED
 }

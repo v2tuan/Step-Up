@@ -1,14 +1,18 @@
 package com.stepup.controller;
 
+import com.stepup.components.SecurityUtils;
 import com.stepup.dtos.requests.OrderDTO;
 import com.stepup.dtos.responses.ResponseObject;
 import com.stepup.entity.Order;
+import com.stepup.entity.User;
 import com.stepup.service.IAddressService;
 import com.stepup.service.IOderItemService;
 import com.stepup.service.IOderService;
 import com.stepup.service.IUserService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -20,12 +24,19 @@ import java.util.List;
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
 public class OrderController {
-
+    @Autowired
     private final IOderService orderService;
+    @Autowired
     private final IOderItemService oderItemService ;
+    @Autowired
     private final IUserService userService;
+    @Autowired
     private final IAddressService addressService;
+    @Autowired
+    private SecurityUtils securityUtils;
+
     @PostMapping
+    @Transactional
     public ResponseEntity<?> createOrder(@Valid @RequestBody OrderDTO orderDTO, BindingResult result) {
         if (result.hasErrors()) {
             List<String> errors = result.getFieldErrors()
@@ -38,6 +49,8 @@ public class OrderController {
                     .data(null)
                     .build());
         }
+
+//        User loginUser = securityUtils.getLoggedInUser();
 
         // Gọi service để tạo đơn hàng
         Order order = orderService.createOrder(orderDTO);

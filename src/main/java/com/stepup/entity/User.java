@@ -1,6 +1,8 @@
 package com.stepup.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.stepup.Enum.Role;
 import jakarta.persistence.*;
@@ -25,6 +27,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "\"user\"")
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) //  Ép Hibernate tải đối tượng trước khi trả về JSON
 public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -62,6 +65,7 @@ public class User implements UserDetails {
     private Role role;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user") // Dùng để lưu danh sách các giá trị đơn giản trong một bảng phụ.
+    @JsonManagedReference
     private List<Address> addresses;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -70,8 +74,9 @@ public class User implements UserDetails {
     // Thêm trường để lưu địa chỉ mặc định
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "default_address_id")
-    @JsonIgnore
-    private Address defaultAddress;    private int points;
+    private Address defaultAddress;
+
+    private int points;
 
     @Column(name = "verification_code")
     private String verificationCode;
