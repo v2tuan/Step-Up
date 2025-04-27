@@ -9,6 +9,7 @@ import com.stepup.repository.*;
 import com.stepup.service.IOderItemService;
 import com.stepup.service.IOderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,11 +18,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class OderServiceImpl implements IOderService {
     @Autowired
-    private OderRepository oderRepository;
+    private OrderRepository oderRepository;
     @Autowired
     private UserRepository userRepo;
     @Autowired
@@ -94,6 +96,7 @@ public class OderServiceImpl implements IOderService {
         User loginUser = securityUtils.getLoggedInUser();
         Order order = new Order();
         order.setUser(loginUser);
+        order.setOrderCode(generateOrderCode());
         order.setAddress(addressRepo.findById(orderDTO.getAddressId())
                 .orElseThrow(() -> new RuntimeException("Chưa có địa chỉ nhận hàng")));
         order.setPaymentMethod(orderDTO.getPaymentMethod());
@@ -168,9 +171,27 @@ public class OderServiceImpl implements IOderService {
 
         order.setDiscountPrice(discount);
         order.setSubTotal(totalAmount);
-        order.setTotalPrice(totalAmount - discount);
+        order.setTotalPrice(totalAmount + 30000 - discount);
         order.setOrderItems(orderItems);
         return oderRepository.save(order);
     }
+
+    private String generateOrderCode() {
+        return "ORD-" + UUID.randomUUID().toString();
+    }
+
+    // Phương thức tự động xóa mềm đơn hàng chưa thanh toán sau 24h
+//    @Scheduled(fixedRate = 60 * 60 * 1000) // Chạy mỗi giờ
+//    public void softDeleteUnpaidOrders() {
+//        LocalDateTime now = LocalDateTime.now();
+//        List<Order> unpaidOrders = oderRepository.findByStatusAndPaymentDeadlineBeforeAndIsDeletedFalse(
+//                Order.OrderStatus.PENDING, now);
+//
+//        for (Order order : unpaidOrders) {
+//            order.setDeleted(true);
+//            order.setStatus(Order.OrderStatus.CANCELLED);
+//            orderRepository.save(order);
+//        }
+//    }
 
 }

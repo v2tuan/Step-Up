@@ -52,14 +52,23 @@ public class OrderController {
 
 //        User loginUser = securityUtils.getLoggedInUser();
 
-        // Gọi service để tạo đơn hàng
-        Order order = orderService.createOrder(orderDTO);
+        try {
+            // Gọi service để tạo đơn hàng
+            Order order = orderService.createOrder(orderDTO);
 
-        return ResponseEntity.ok().body(ResponseObject.builder()
-                .message("Created Order successfully with items")
-                .data(order)
-                .status(HttpStatus.OK)
-                .build());
+            return ResponseEntity.ok().body(ResponseObject.builder()
+                    .message("Created Order successfully with items")
+                    .data(order.getId())
+                    .status(HttpStatus.OK)
+                    .build());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok().body(ResponseObject.builder()
+                    .message(e.getMessage())
+                    .status(HttpStatus.OK)
+                    .build());
+        }
     }
 
     @PutMapping

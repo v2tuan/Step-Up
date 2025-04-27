@@ -2,17 +2,17 @@ package com.stepup.repository;
 
 import com.stepup.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import com.stepup.Enum.OrderShippingStatus;
+
 @Repository
-public interface OderRepository extends JpaRepository<Order, Long> {
+public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUser_Id(Long userId);
 
     List<Order> findByAddress_Id(Long addressId);
+
+//    List<Order> findByPaymentStatus
 
     // Lấy danh sách đơn hàng theo trạng thái
 //    List<Order> findByStatus(OrderShippingStatus status);
