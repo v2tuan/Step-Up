@@ -66,4 +66,5 @@ public interface IProductService {
 
     //  Xóa sản phẩm theo ID
     void deleteProduct(Long productId);
+    List<String> findAllProductNames();
 }

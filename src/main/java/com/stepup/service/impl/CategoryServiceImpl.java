@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,5 +75,10 @@ public class CategoryServiceImpl implements ICategoryService {
         category.setSlug(categoryDTO.getSlug());
         category.setUpdatedAt(LocalDateTime.now());
         return repo.save(category);
+    }
+
+    @Override
+    public List<String> findAllCategoryNames() {
+        return repo.findAllCategoryNames();
     }
 }

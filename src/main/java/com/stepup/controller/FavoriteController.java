@@ -89,6 +89,18 @@ public class FavoriteController {
         }
     }
 
+    @DeleteMapping("/remove1")
+    public String removeFavoriteItemByColorID(@RequestParam long colorId) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof UserDetails) {
+            User user = (User) principal;
+            return favoriteService.removefromFavoriteByColorId(user, colorId);
+        }
+        else{
+            throw new RuntimeException("Người dùng chưa đăng nhập vào hệ thống");
+        }
+    }
+
     @DeleteMapping("/remove")
     public String removeFavoriteItem1(@RequestParam long ProductId) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();

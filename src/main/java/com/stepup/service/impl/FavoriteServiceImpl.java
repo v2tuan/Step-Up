@@ -27,10 +27,6 @@ public class FavoriteServiceImpl implements IFavoriteService {
     @Autowired
     private ProductVariantRepository productVariantRepository;
 
-    @Override
-    public Optional<Favorite> getFavorite(int id) {
-        return getFavorite(id);
-    }
 
     @Override
     public void deleteFavorite(Long id) {
@@ -66,6 +62,16 @@ public class FavoriteServiceImpl implements IFavoriteService {
             return "Product is Unavailable! ";
         }
         favRepo.deleteById(FavoriteId);
+        return "Remove Favorite Successfully!";
+    }
+    @Override
+    public String removefromFavoriteByColorId(User user, long colorId) {
+        Color color = colorRepo.getReferenceById(colorId);
+        Favorite favoriteItem = favRepo.findByUserAndColor(user,color).orElse(null);
+        if(favoriteItem == null){
+            return "Product is Unavailable! ";
+        }
+        favRepo.deleteById(favoriteItem.getId());
         return "Remove Favorite Successfully!";
     }
 

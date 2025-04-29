@@ -19,5 +19,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     String findCategoryNameById(@Param("categoryId") Long categoryId);
 
     boolean existsByName(String name);
+    @Query("SELECT c.name FROM Category c WHERE c.isDeleted = false")
+    List<String> findAllCategoryNames();
 
 }

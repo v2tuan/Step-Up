@@ -49,6 +49,9 @@ public interface ProductRepository  extends JpaRepository<Product, Long> {
             "WHEN LOWER(p.name) LIKE CONCAT('%', :query, '%') THEN 1 " +
             "END")
     List<Product> findBySearchQuery(@Param("query") String query);
+
+    @Query("SELECT p.name FROM Product p WHERE p.isActive = true")
+    List<String> findAllActiveProductNames();
     // Tìm sản phẩm theo danh mục và khoảng giá
 //    @Query("SELECT new com.stepup.model.ProductVariantDTO( " +
 //            "p.id, p.name, p.slug, p.description, p.thumbnail, p.category.id, " +

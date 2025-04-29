@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public interface IFavoriteService {
 
-    Optional<Favorite> getFavorite(int id);
     void deleteFavorite(Long id);
     Favorite saveFavorite(Favorite favorite);
     List<Favorite> getFavoriteByUserId(Long userId);;
@@ -19,4 +18,6 @@ public interface IFavoriteService {
     Product getProductByColorId(Long colorId);
     String deleteFavoriteByProduct(User user ,List<Color> color);
     Boolean checkFavorite(User user, long ColorId);
+    String removefromFavoriteByColorId(User user, long color);
+
 }

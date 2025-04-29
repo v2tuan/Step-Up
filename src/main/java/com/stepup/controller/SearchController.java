@@ -5,6 +5,8 @@ import com.stepup.entity.Favorite;
 import com.stepup.entity.Product;
 import com.stepup.mapper.IProductMapper;
 import com.stepup.dtos.responses.ProductCardResponse;
+import com.stepup.repository.ColorRepository;
+import com.stepup.service.impl.CategoryServiceImpl;
 import com.stepup.service.impl.FavoriteServiceImpl;
 import com.stepup.service.redis.ProductRedisService;
 import com.stepup.service.impl.ProductServiceImpl;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,6 +34,10 @@ public class SearchController {
 
     @Autowired
     private IProductMapper productMapper;
+    @Autowired
+    private CategoryServiceImpl categoryService;
+    @Autowired
+    private ColorRepository colorRepository;
 
     @GetMapping
     public ResponseEntity<?> searchProducts(@RequestParam("query") String query) {
@@ -64,4 +72,21 @@ public class SearchController {
 
         return ResponseEntity.ok().body(productCardResponses);
     }
+
+    @GetMapping("suggestions")
+    public ResponseEntity<List<String>> getSearchSuggestions() {
+        List<String> productNames = productService.findAllProductNames();
+        List<String> categoryNames = categoryService.findAllCategoryNames();
+        Set<String> mergedSuggestions = new HashSet<>();
+        mergedSuggestions.addAll(productNames);
+        mergedSuggestions.addAll(categoryNames);
+        return ResponseEntity.ok(new ArrayList<>(mergedSuggestions));
+    }
+
+    @GetMapping("/colors")
+    public ResponseEntity<List<String>> getAllDistinctColors() {
+        List<String> colors = colorRepository.findAllDistinctColorNames();
+        return ResponseEntity.ok(colors);
+    }
+
 }

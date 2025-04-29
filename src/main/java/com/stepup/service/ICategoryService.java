@@ -24,4 +24,5 @@ public interface ICategoryService {
 
     Category createCategory(CategoryDTO categoryDTO);
     Category updateCategory(Long id, CategoryDTO categoryDTO);
+    List<String> findAllCategoryNames();
 }

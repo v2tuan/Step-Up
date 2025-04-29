@@ -282,4 +282,9 @@ public class ProductServiceImpl implements IProductService {
     public void deleteProduct(Long productId) {
         repo.deleteById(productId);
     }
+
+    @Override
+    public List<String> findAllProductNames() {
+        return repo.findAllActiveProductNames();
+    }
 }
