@@ -86,3 +86,12 @@ api:
 jwt:
   secretKey: TaqlmGv1iEDMRiFp/pHuID1+T84IABfuA0xXh4GhiUI=
   expiration: 3600  # 1 hour
+
+vnpay:
+  pay-url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+#  return-url: "${VNPAY_RETURN_URI:http://localhost:4200/payments/payment-callback}"
+  return-url: "http://10.0.2.2:8089/api/v1/payments/vnpay-return"
+#  ipnUrl: "http://your-backend-domain/vnpay/ipn"
+  tmn-code: "R5GDGO9U" # Add your TMN code here
+  secret-key: "2QI058DH2E0HW12GTPJ84YL5KD8IJBUM" # Add your secret key here
+  api-url: "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction"

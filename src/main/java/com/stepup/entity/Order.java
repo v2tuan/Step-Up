@@ -27,6 +27,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(unique = true)
+    private String orderCode;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     @JsonIgnore
@@ -52,10 +55,10 @@ public class Order {
     @JsonManagedReference
     private List<OrderItem> orderItems;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "payment_status")
-//    //Trạng thái giao hàng
-//    private PaymentStatus paymentStatus;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status")
+    //Trạng thái giao hàng
+    private PaymentStatus paymentStatus;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id", referencedColumnName = "payment_id")
