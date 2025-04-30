@@ -5,10 +5,10 @@ import com.stepup.dtos.requests.OrderDTO;
 import com.stepup.dtos.responses.ResponseObject;
 import com.stepup.entity.Order;
 import com.stepup.entity.User;
+import com.stepup.mapper.IOrderMapper;
 import com.stepup.service.IAddressService;
 import com.stepup.service.IOderItemService;
-import com.stepup.service.IOderService;
-import com.stepup.service.IUserService;
+import com.stepup.service.impl.OrderServiceImpl;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,15 +25,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderController {
     @Autowired
-    private final IOderService orderService;
+    private OrderServiceImpl orderService;
     @Autowired
     private final IOderItemService oderItemService ;
-    @Autowired
-    private final IUserService userService;
     @Autowired
     private final IAddressService addressService;
     @Autowired
     private SecurityUtils securityUtils;
+    @Autowired
+    private IOrderMapper orderMapper;
 
     @PostMapping
     @Transactional
@@ -107,11 +107,30 @@ public class OrderController {
                 .build());
     }
 
-
-    @GetMapping("/{userId}")
+    @GetMapping("/me/{userId}")
     public ResponseEntity<?> getUserOrders(@PathVariable String userId) {
         return ResponseEntity.ok().body(ResponseObject.builder()
                 .message("User Orders")
+                .build());
+    }
+
+//    @GetMapping("/{orderId}")
+//    public ResponseEntity<?> getOrders(@PathVariable long orderId) {
+//        Order order = orderService.getOrderById(orderId).orElse(null);
+//        return ResponseEntity.ok().body(ResponseObject.builder()
+//                .message("User Orders")
+//                .data(order)
+//                .build());
+//    }
+
+    @GetMapping("/{orderStatus}")
+    public ResponseEntity<?> getOrdersByStatus(@PathVariable String orderStatus) {
+        User loginUser = securityUtils.getLoggedInUser();
+        List<Order> orderList = orderService.getOrderByUserAndStatus(loginUser, orderStatus);
+
+        return ResponseEntity.ok().body(ResponseObject.builder()
+                .message("User Orders")
+                .data(orderMapper.toOrderResponseList(orderList))
                 .build());
     }
 }

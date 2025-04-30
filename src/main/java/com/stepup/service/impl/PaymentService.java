@@ -13,8 +13,8 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 public class PaymentService {
-    @Autowired
-    private PaymentRepository paymentRepository;
+//    @Autowired
+//    private PaymentRepository paymentRepository;
     @Autowired
     private OrderRepository orderRepository;
     // Phương thức lưu kết quả giao dịch

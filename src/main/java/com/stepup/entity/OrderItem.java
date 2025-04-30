@@ -26,9 +26,6 @@ public class OrderItem {
     @JsonBackReference
     private Order order;
 
-    @Enumerated(EnumType.STRING)
-    private OrderShippingStatus status;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productVariant_id")
     private ProductVariant productVariant;
@@ -39,21 +36,18 @@ public class OrderItem {
 
     // giá ở đây dựa trên số lượng product
     private int count;
-    private double shippingPrice = 0;
-    private double totalPrice;
-    private double subTotal;
-    private double discountPrice = 0;
+//    private double shippingPrice = 0;
+//    private double totalPrice;
+//    private double subTotal;
+//    private double discountPrice = 0;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "delivery")
-    private Delivery delivery;
+//    @OneToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "delivery")
+//    private Delivery delivery;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-    @Column(name = "receive_date")
-    private LocalDateTime  receiveDate;
 }

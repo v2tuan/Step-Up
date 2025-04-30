@@ -1,4 +1,4 @@
-package com.stepup.entity;
+package com.stepup.dtos.responses;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.stepup.Enum.OrderShippingStatus;
 import com.stepup.Enum.PaymentMethod;
 import com.stepup.Enum.PaymentStatus;
+import com.stepup.entity.Address;
+import com.stepup.entity.Coupon;
+import com.stepup.entity.OrderItem;
+import com.stepup.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,55 +23,18 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "Orders")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) //  Bỏ qua nhưng truong hibernateLazyInitializer
-public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class OrderResponse {
     private long id;
-
-    @Column(unique = true)
     private String orderCode;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
-    @JsonIgnore
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "addressId")
-    @JsonManagedReference
-    private Address address;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coupon_id")
-    private Coupon coupon;
-
     private double subTotal;
     private Double totalPrice; // = subTotal - discountPrice
     private Double discountPrice;
     private double shippingPrice = 0;
-
-    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<OrderItem> orderItems;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "payment_status")
-    //Trạng thái giao hàng
+    private List<OrderItemResponse> orderItems;
     private PaymentStatus paymentStatus;
-
-    @Enumerated(EnumType.STRING)
     private OrderShippingStatus status;
-
-    @CreationTimestamp
     private LocalDateTime createdAt;
-    @UpdateTimestamp
     private LocalDateTime updatedAt;
-    @Column(name = "receive_date")
     private LocalDateTime  receiveDate;
 }

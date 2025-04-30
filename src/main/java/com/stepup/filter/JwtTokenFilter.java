@@ -59,7 +59,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
  			if(new AntPathMatcher().match("/api/v1/products/**", requestPath)) {
                 break;
-            }            if(new AntPathMatcher().match("/api/v1/orders", requestPath)) {
+            }
+             if(new AntPathMatcher().match("/api/v1/orders/**", requestPath)) {
                 break;
             }
             if (new AntPathMatcher().match(path, requestPath)) {

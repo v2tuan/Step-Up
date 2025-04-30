@@ -1,8 +1,11 @@
 package com.stepup.controller;
 
+import com.stepup.Enum.PaymentStatus;
 import com.stepup.components.VNPayUtils;
 import com.stepup.dtos.requests.payment.PaymentDTO;
 import com.stepup.dtos.responses.ResponseObject;
+import com.stepup.service.impl.OrderServiceImpl;
+import com.stepup.service.impl.PaymentService;
 import com.stepup.service.impl.VNPayService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,6 +33,9 @@ public class PaymentController {
 
     @Autowired
     private VNPayUtils vnPayUtils;
+
+    @Autowired
+    private OrderServiceImpl orderService;
 
     @PostMapping("/create_payment_url")
     public ResponseEntity<ResponseObject> createPayment(@RequestBody PaymentDTO paymentRequest, HttpServletRequest request) {
@@ -64,6 +70,7 @@ public class PaymentController {
         if (isValidChecksum) {
             // Lưu kết quả giao dịch vào database
 //            saveTransactionResult(vnp_TxnRef, vnp_ResponseCode, vnp_Amount);
+            orderService.updatePaymentStatus(vnp_TxnRef, PaymentStatus.COMPLETED);
 
             // Chuyển hướng về ứng dụng Android với thông tin giao dịch
             String redirectUrl = "yourapp://payment?txnRef=" + vnp_TxnRef +

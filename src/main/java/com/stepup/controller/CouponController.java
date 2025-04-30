@@ -1,5 +1,6 @@
 package com.stepup.controller;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.stepup.dtos.requests.CouponDTO;
 import com.stepup.dtos.responses.ResponseObject;
 import com.stepup.entity.Coupon;

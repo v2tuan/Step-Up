@@ -1,5 +1,6 @@
 package com.stepup.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) //  Bỏ qua neu class nay la truong hibernateLazyInitializer
 public class Coupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

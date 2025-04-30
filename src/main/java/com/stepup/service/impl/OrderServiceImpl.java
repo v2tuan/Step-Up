@@ -1,6 +1,7 @@
 package com.stepup.service.impl;
 
 import com.stepup.Enum.OrderShippingStatus;
+import com.stepup.Enum.PaymentStatus;
 import com.stepup.components.SecurityUtils;
 import com.stepup.dtos.requests.OrderDTO;
 import com.stepup.dtos.requests.OrderItemDTO;
@@ -9,11 +10,9 @@ import com.stepup.repository.*;
 import com.stepup.service.IOderItemService;
 import com.stepup.service.IOderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class OderServiceImpl implements IOderService {
+public class OrderServiceImpl implements IOderService {
     @Autowired
     private OrderRepository oderRepository;
     @Autowired
@@ -45,6 +44,12 @@ public class OderServiceImpl implements IOderService {
     @Override
     public Optional<Order> getOrderById(Long orderId) {
         return oderRepository.findById(orderId);
+    }
+
+
+    public List<Order> getOrderByUserAndStatus(User user, String orderStatus){
+        OrderShippingStatus status = OrderShippingStatus.valueOf("PENDING");
+        return oderRepository.findByUser_IdAndStatus(user.getId(), status);
     }
 
     @Override
@@ -72,6 +77,15 @@ public class OderServiceImpl implements IOderService {
             return oderRepository.save(order);
         }
         return null;
+    }
+
+    public boolean updatePaymentStatus(String orderCode, PaymentStatus paymentStatus) {
+        Order order = oderRepository.findByOrderCode(orderCode).orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+        if(order != null) {
+            order.setPaymentStatus(paymentStatus);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -113,7 +127,6 @@ public class OderServiceImpl implements IOderService {
         for (OrderItemDTO orderItemDTO : orderDTO.getOrderItems()) {
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
-            orderItem.setStatus(OrderShippingStatus.PENDING);
             ProductVariant productVariant = productVariantRepo.findById(orderItemDTO.getProductVariantId())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm tương ứng trong đơn hàng"));
 
@@ -121,9 +134,9 @@ public class OderServiceImpl implements IOderService {
             orderItem.setPrice(productVariant.getPrice());
             orderItem.setPromotionPrice(productVariant.getPromotionPrice());
             orderItem.setCount(orderItemDTO.getCount());
-            orderItem.setShippingPrice(30000.0);
+//            orderItem.setShippingPrice(30000.0);
             double itemTotal = productVariant.getPromotionPrice() * orderItemDTO.getCount();
-            orderItem.setSubTotal(itemTotal);
+//            orderItem.setSubTotal(itemTotal);
             orderItems.add(orderItem);
             totalAmount += itemTotal;
         }
@@ -151,28 +164,30 @@ public class OderServiceImpl implements IOderService {
             }
         }
 
-        if (discount > 0 && totalAmount > 0) {
-            double remainingDiscount = discount;
-            int lastIndex = orderItems.size() - 1;
-
-            for (int i = 0; i < orderItems.size(); i++) {
-                OrderItem orderItem = orderItems.get(i);
-                if (i == lastIndex) {
-                    orderItem.setDiscountPrice(remainingDiscount);
-                } else {
-                    double proportion = orderItem.getSubTotal() / totalAmount;
-                    double discountPrice = Math.round(discount * proportion * 100.0) / 100.0;
-                    orderItem.setTotalPrice(orderItem.getSubTotal() - discountPrice);
-                    orderItem.setDiscountPrice(discountPrice);
-                    remainingDiscount -= discountPrice;
-                }
-            }
-        }
+//        if (discount > 0 && totalAmount > 0) {
+//            double remainingDiscount = discount;
+//            int lastIndex = orderItems.size() - 1;
+//
+//            for (int i = 0; i < orderItems.size(); i++) {
+//                OrderItem orderItem = orderItems.get(i);
+//                if (i == lastIndex) {
+//                    orderItem.setDiscountPrice(remainingDiscount);
+//                } else {
+//                    double proportion = orderItem.getSubTotal() / totalAmount;
+//                    double discountPrice = Math.round(discount * proportion * 100.0) / 100.0;
+//                    orderItem.setTotalPrice(orderItem.getSubTotal() - discountPrice);
+//                    orderItem.setDiscountPrice(discountPrice);
+//                    remainingDiscount -= discountPrice;
+//                }
+//            }
+//        }
 
         order.setDiscountPrice(discount);
         order.setSubTotal(totalAmount);
-        order.setTotalPrice(totalAmount + 30000 - discount);
+        order.setShippingPrice(30000);
+        order.setTotalPrice(totalAmount + order.getShippingPrice() - discount);
         order.setOrderItems(orderItems);
+        order.setStatus(OrderShippingStatus.PENDING);
         return oderRepository.save(order);
     }
 
