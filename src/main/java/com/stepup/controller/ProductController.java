@@ -64,7 +64,6 @@ public class ProductController {
 
                 boolean isFav = product.getColors().stream()
                         .anyMatch(color -> favoriteColorIds.contains(color.getId()));
-
                 response.setFav(isFav);
             }
             return ResponseEntity.ok().body(productCardResponses);
