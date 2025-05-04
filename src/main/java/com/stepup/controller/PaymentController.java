@@ -77,6 +77,7 @@ public class PaymentController {
                     "&responseCode=" + vnp_ResponseCode;
             response.sendRedirect(redirectUrl);
         } else {
+            orderService.updatePaymentStatus(vnp_TxnRef, PaymentStatus.FAILED);
             // Xử lý trường hợp checksum không hợp lệ
             response.sendRedirect("yourapp://payment?error=invalid_checksum");
 

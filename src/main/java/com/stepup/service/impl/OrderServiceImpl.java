@@ -48,7 +48,7 @@ public class OrderServiceImpl implements IOderService {
 
 
     public List<Order> getOrderByUserAndStatus(User user, String orderStatus){
-        OrderShippingStatus status = OrderShippingStatus.valueOf("PENDING");
+        OrderShippingStatus status = OrderShippingStatus.valueOf(orderStatus);
         return oderRepository.findByUser_IdAndStatus(user.getId(), status);
     }
 
@@ -73,7 +73,7 @@ public class OrderServiceImpl implements IOderService {
         Optional<Order> orderOpt = oderRepository.findById(orderId);
         if (orderOpt.isPresent()) {
             Order order = orderOpt.get();
-//            order.setStatus(status);
+            order.setStatus(status);
             return oderRepository.save(order);
         }
         return null;
@@ -188,6 +188,7 @@ public class OrderServiceImpl implements IOderService {
         order.setTotalPrice(totalAmount + order.getShippingPrice() - discount);
         order.setOrderItems(orderItems);
         order.setStatus(OrderShippingStatus.PENDING);
+        order.setPaymentStatus(PaymentStatus.PENDING);
         return oderRepository.save(order);
     }
 

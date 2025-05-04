@@ -1,5 +1,6 @@
 package com.stepup.controller;
 
+import com.stepup.Enum.OrderShippingStatus;
 import com.stepup.components.SecurityUtils;
 import com.stepup.dtos.requests.OrderDTO;
 import com.stepup.dtos.responses.ResponseObject;
@@ -19,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -132,5 +134,35 @@ public class OrderController {
                 .message("User Orders")
                 .data(orderMapper.toOrderResponseList(orderList))
                 .build());
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getOrder(@RequestParam(required = true) Long orderId) {
+        User loginUser = securityUtils.getLoggedInUser();
+        Order order = orderService.getOrderById(orderId).orElse(null);
+        return ResponseEntity.ok().body(ResponseObject.builder()
+                .message("Get Order")
+                .data(orderMapper.toOrderResponse(order))
+                .build());
+    }
+
+    @PostMapping("/cancelOrder")
+    public ResponseEntity<ResponseObject> cancelOrder(@RequestParam Long orderId) {
+        Optional<Order> optionalOrder = orderService.getOrderById(orderId);
+
+        if (optionalOrder.isPresent()) {
+            orderService.updateOrderStatus(orderId, OrderShippingStatus.CANCELLED);
+            return ResponseEntity.ok(
+                    ResponseObject.builder()
+                            .message("Cancel the order successfully")
+                            .build()
+            );
+        }
+
+        return ResponseEntity.badRequest().body(
+                ResponseObject.builder()
+                        .message("Cancel the order failed")
+                        .build()
+        );
     }
 }

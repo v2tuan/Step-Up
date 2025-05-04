@@ -26,6 +26,7 @@ import java.util.List;
 public class OrderResponse {
     private long id;
     private String orderCode;
+    private Address address;
     private double subTotal;
     private Double totalPrice; // = subTotal - discountPrice
     private Double discountPrice;
