@@ -94,12 +94,9 @@ public class AddressServiceImpl  implements IAddressService {
         return repo.save(address);
     }
 
-    public boolean setDefaultAddress(Long addressId, long UserID) {
+    public boolean setDefaultAddress(Long addressId, User user) {
         Address address = repo.findById(addressId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ với ID: " + addressId));
-        User user = userRepo.findById(UserID)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
-        // Đặt địa chỉ mặc định
         user.setDefaultAddress(address);
         userRepo.save(user);
         return true;

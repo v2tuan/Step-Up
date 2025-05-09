@@ -1,6 +1,7 @@
 package com.stepup.controller;
 
 import com.stepup.dtos.requests.AddressDTO;
+import com.stepup.dtos.requests.AddressRequest;
 import com.stepup.dtos.responses.ResponseObject;
 import com.stepup.entity.Address;
 import com.stepup.entity.User;
@@ -34,7 +35,7 @@ public class AddressController {
     // 🟢 1. API Tạo Địa Chỉ Mới
     @PostMapping
     public ResponseEntity<?> createAddress(
-            @Valid @RequestBody AddressDTO address,
+            @Valid @RequestBody AddressRequest request,
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
@@ -56,13 +57,17 @@ public class AddressController {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (principal instanceof UserDetails) {
                 User user = (User) principal;
-                address.setUserId(user.getId());
-                Address newAddress = addressService.saveAddress(address);
+                request.getAddress().setUserId(user.getId());
+                Address newAddress = addressService.saveAddress(request.getAddress());
+                // Gọi xử lý nếu setDefault = true
+                if (request.isSetDefault()) {
+                    boolean isSet = addressService.setDefaultAddress(request.getAddress().getId(),user);
+                }
                 return ResponseEntity.ok(
                         ResponseObject.builder()
                                 .message("Created new address successfully")
                                 .status(HttpStatus.OK)
-                                .data(null)
+                                .data(newAddress)
                                 .build()
                 );
             } else {
@@ -79,6 +84,7 @@ public class AddressController {
             );
         }
     }
+
 
     @GetMapping("/user/addresses")
     public ResponseEntity<Map<String, Object>> getAddressesByUserId() {
@@ -150,7 +156,7 @@ public class AddressController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateAddress(
             @PathVariable Long id,
-            @Valid @RequestBody AddressDTO updatedAddress,
+            @Valid @RequestBody AddressRequest request,
             BindingResult bindingResult
     ) {
         // Kiểm tra lỗi đầu vào
@@ -170,8 +176,13 @@ public class AddressController {
         }
 
         try {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User user = (User) principal;
             // Cập nhật địa chỉ
-            Address address = addressService.updateAddress(id, updatedAddress);
+            Address address = addressService.updateAddress(id, request.getAddress());
+            if (request.isSetDefault()) {
+                boolean isSet = addressService.setDefaultAddress(request.getAddress().getId(),user);
+            }
             return ResponseEntity.ok(
                     ResponseObject.builder()
                             .message("Cập nhật địa chỉ thành công")
@@ -241,8 +252,7 @@ public class AddressController {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (principal instanceof UserDetails) {
                 User user = (User) principal;
-                Long userId = user.getId();
-                boolean isSet = addressService.setDefaultAddress(id, userId);
+                boolean isSet = addressService.setDefaultAddress(id,user);
                 if (isSet) {
                     return ResponseEntity.ok(
                             ResponseObject.builder()
