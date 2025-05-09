@@ -36,9 +36,11 @@ spring:
 #    password: 1234567890
 
   datasource:
-    url: jdbc:mysql://mainline.proxy.rlwy.net:51159/railway
+    url: jdbc:mysql://interchange.proxy.rlwy.net:19033/railway
     username: root
-    password: ddzxzgBdcxBYdJiYBiRrkatfYwVtsvsl
+    password: KCvicHEinalmgrwXWbXzFIayIATHgZPx
+
+
 
   jpa:
     hibernate:
