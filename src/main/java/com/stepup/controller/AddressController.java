@@ -58,10 +58,11 @@ public class AddressController {
             if (principal instanceof UserDetails) {
                 User user = (User) principal;
                 request.getAddress().setUserId(user.getId());
-                Address newAddress = addressService.saveAddress(request.getAddress());
+                Address newAddress = addressService.saveAddress(request.getAddress(), user);
                 // Gọi xử lý nếu setDefault = true
+
                 if (request.isSetDefault()) {
-                    boolean isSet = addressService.setDefaultAddress(request.getAddress().getId(),user);
+                    boolean isSet = addressService.setDefaultAddress(newAddress.getId(),user);
                 }
                 return ResponseEntity.ok(
                         ResponseObject.builder()
@@ -183,7 +184,10 @@ public class AddressController {
             if (request.isSetDefault()) {
                 boolean isSet = addressService.setDefaultAddress(request.getAddress().getId(),user);
             }
-            return ResponseEntity.ok(
+            else
+            {
+                boolean isSet = addressService.UnSetDefaultAddress(request.getAddress().getId(),user);
+            }            return ResponseEntity.ok(
                     ResponseObject.builder()
                             .message("Cập nhật địa chỉ thành công")
                             .status(HttpStatus.OK)
@@ -215,8 +219,9 @@ public class AddressController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAddress(@PathVariable Long id) {
         try {
-            boolean isDeleted = addressService.deleteAddress(id);
-
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User user = (User) principal;
+            boolean isDeleted = addressService.deleteAddress(id,user);
             if (isDeleted) {
                 return ResponseEntity.ok(
                         ResponseObject.builder()

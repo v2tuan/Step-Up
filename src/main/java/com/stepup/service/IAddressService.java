@@ -2,6 +2,7 @@ package com.stepup.service;
 
 import com.stepup.dtos.requests.AddressDTO;
 import com.stepup.entity.Address;
+import com.stepup.entity.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,12 +12,12 @@ public interface IAddressService {
     List<AddressDTO> getAddressesByUserId(Long userId);
 
     // Thêm hoặc cập nhật địa chỉ
-    Address saveAddress(AddressDTO address);
+    Address saveAddress(AddressDTO address, User user);
 
     Optional<Address> findById(Long addressId);
 
     //  Xóa địa chỉ theo ID
-    boolean deleteAddress(Long addressId);
+    boolean deleteAddress(Long addressId, User user);
 
     // Xóa tất cả địa chỉ của một người dùng
     void deleteAddressesByUserId(Long userId);

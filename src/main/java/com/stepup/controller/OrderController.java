@@ -1,6 +1,8 @@
 package com.stepup.controller;
 
 import com.stepup.Enum.OrderShippingStatus;
+import com.stepup.Enum.PaymentMethod;
+import com.stepup.Enum.PaymentStatus;
 import com.stepup.components.SecurityUtils;
 import com.stepup.dtos.requests.OrderDTO;
 import com.stepup.dtos.responses.ResponseObject;
@@ -149,20 +151,53 @@ public class OrderController {
     @PostMapping("/cancelOrder")
     public ResponseEntity<ResponseObject> cancelOrder(@RequestParam Long orderId) {
         Optional<Order> optionalOrder = orderService.getOrderById(orderId);
-
+        OrderShippingStatus status ;
         if (optionalOrder.isPresent()) {
-            orderService.updateOrderStatus(orderId, OrderShippingStatus.CANCELLED);
+            Order order = optionalOrder.get();
+            if(order.getPaymentMethod().equals(PaymentMethod.VNPAY) && order.getPaymentStatus().equals(PaymentStatus.COMPLETED))
+            {
+                status = OrderShippingStatus.RETURNED;
+                orderService.updateOrderStatus(orderId, status);
+                orderService.updatePaymentStatus1(order,PaymentStatus.REFUNDING);
+            }
+            else
+            {
+                orderService.updateOrderStatus(orderId,OrderShippingStatus.CANCELLED);
+                orderService.updatePaymentStatus1(order,PaymentStatus.FAILED);
+            }
             return ResponseEntity.ok(
                     ResponseObject.builder()
                             .message("Cancel the order successfully")
                             .build()
             );
         }
-
         return ResponseEntity.badRequest().body(
                 ResponseObject.builder()
                         .message("Cancel the order failed")
                         .build()
         );
     }
+
+    @PostMapping("/returnOrder")
+    public ResponseEntity<ResponseObject> returnOrder(@RequestParam Long orderId) {
+        Optional<Order> optionalOrder = orderService.getOrderById(orderId);
+        if (optionalOrder.isPresent()) {
+            Order order = optionalOrder.get();
+            orderService.updateOrderStatus(orderId,OrderShippingStatus.RETURNED);
+            orderService.updatePaymentStatus1(order,PaymentStatus.REFUNDING);
+            return ResponseEntity.ok(
+                    ResponseObject.builder()
+                            .message("Request return the order successfully")
+                            .build()
+            );
+        }
+        return ResponseEntity.badRequest().body(
+                ResponseObject.builder()
+                        .message("Return the order failed")
+                        .build()
+        );
+    }
+
+
+
 }

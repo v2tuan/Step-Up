@@ -33,21 +33,12 @@ public class AddressServiceImpl  implements IAddressService {
     }
 
     @Override
-    public Address saveAddress(AddressDTO addressDTO) {
+    public Address saveAddress(AddressDTO addressDTO, User user) {
         Address address = new Address();
         address.setPhone(addressDTO.getPhone());
         address.setAddr(addressDTO.getAddr());
         address.setFullName(addressDTO.getFullName());
-
-        // Tìm user từ userRepo
-        userRepo.findById(addressDTO.getUserId()).ifPresentOrElse(
-                user -> {
-                    address.setUser(user);// Set thêm full_name từ User
-                },
-                () -> {
-                    throw new EntityNotFoundException("Không tìm thấy User với ID: " + addressDTO.getUserId());
-                }
-        );
+        address.setUser(user);
         // Lưu vào repository
         return repo.save(address);
 
@@ -59,8 +50,12 @@ public class AddressServiceImpl  implements IAddressService {
     }
 
     @Override
-    public boolean deleteAddress(Long addressId) {
+    public boolean deleteAddress(Long addressId,User user) {
         if (repo.existsById(addressId)) {
+            if (user.getDefaultAddress() != null && user.getDefaultAddress().getId().equals(addressId)) {
+                user.setDefaultAddress(null);
+                userRepo.save(user);
+            }
             repo.deleteById(addressId);
             return true;
         }
@@ -99,6 +94,13 @@ public class AddressServiceImpl  implements IAddressService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ với ID: " + addressId));
         user.setDefaultAddress(address);
         userRepo.save(user);
+        return true;
+    }
+    public boolean UnSetDefaultAddress(Long addressId,User user) {
+        if(user.getDefaultAddress() != null && user.getDefaultAddress().getId().equals(addressId)) {
+            user.setDefaultAddress(null);
+            userRepo.save(user);
+        }
         return true;
     }
 

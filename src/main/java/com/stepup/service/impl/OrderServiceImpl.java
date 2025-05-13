@@ -78,7 +78,14 @@ public class OrderServiceImpl implements IOderService {
         }
         return null;
     }
-
+    public boolean updatePaymentStatus1(Order order, PaymentStatus paymentStatus) {
+        if(order != null) {
+            order.setPaymentStatus(paymentStatus);
+            order = oderRepository.save(order);
+            return true;
+        }
+        return false;
+    }
     public boolean updatePaymentStatus(String orderCode, PaymentStatus paymentStatus) {
         Order order = oderRepository.findByOrderCode(orderCode).orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
         if(order != null) {

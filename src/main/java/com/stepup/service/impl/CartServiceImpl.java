@@ -71,13 +71,28 @@ public class CartServiceImpl implements ICartService {
             return "Số lượng trong kho không đủ";
         }
 
+        Optional<CartItem> existingItemOpt = cartItemRepository.findByCartAndProductVariant(cart, productVariant);
         // Thêm sản phẩm vào giỏ hàng
-        CartItem cartItem = CartItem.builder()
-                .cart(cart)
-                .productVariant(productVariant)
-                .count(addToCartDTO.getQuantity())
-                .build();
-        cartItemRepository.save(cartItem);
+        if (existingItemOpt.isPresent()) {
+            CartItem existingItem = existingItemOpt.get();
+            int newQuantity = existingItem.getCount() + addToCartDTO.getQuantity();
+
+            // Kiểm tra lại số lượng tồn kho
+            if (productVariant.getQuantity() < newQuantity) {
+                return "Số lượng trong kho không đủ cho tổng số lượng đã chọn";
+            }
+
+            existingItem.setCount(newQuantity);
+            cartItemRepository.save(existingItem);
+        } else {
+            // Thêm mới nếu chưa tồn tại
+            CartItem cartItem = CartItem.builder()
+                    .cart(cart)
+                    .productVariant(productVariant)
+                    .count(addToCartDTO.getQuantity())
+                    .build();
+            cartItemRepository.save(cartItem);
+        }
         return "Thêm vào giỏ hàng thành công";
     }
 
