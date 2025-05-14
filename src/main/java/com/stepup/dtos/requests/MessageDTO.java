@@ -22,4 +22,5 @@ public class MessageDTO {
     private String fileUrl;
     private LocalDateTime createdAt;
     private LocalDateTime readAt;
+    private boolean CSKH;
 }

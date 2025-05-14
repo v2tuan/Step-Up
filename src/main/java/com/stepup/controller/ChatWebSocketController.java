@@ -1,5 +1,6 @@
 package com.stepup.controller;
 
+import com.stepup.Enum.Role;
 import com.stepup.components.SecurityUtils;
 import com.stepup.dtos.requests.ChatMessageRequest;
 import com.stepup.dtos.requests.MessageDTO;
@@ -36,7 +37,7 @@ public class ChatWebSocketController {
     public void sendMessage(@Payload ChatMessageRequest request, Principal principal) {
         // Gửi tin nhắn đến tất cả client đang lắng nghe topic này
         User currentUser = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();;
-
+        boolean cskh = currentUser.getRole().equals(Role.CUSTOMER) ? false : true;
         MessageDTO messageDto = MessageDTO.builder()
                 .createdAt(request.getCreatedAt())
                 .conversationId(request.getConversationId())
@@ -44,6 +45,7 @@ public class ChatWebSocketController {
                 .messageType(request.getMessageType())
                 .sender(userMapper.toUserRespone(currentUser))
                 .fileUrl(request.getFileUrl())
+                .CSKH(cskh)
                 .build();
         messagingTemplate.convertAndSend("/topic/conversation." + request.getConversationId(), messageDto); // giành cho người dùng
         messagingTemplate.convertAndSend("/topic/conversation", messageDto); // giành cho admin
@@ -56,13 +58,16 @@ public class ChatWebSocketController {
 
             Message.MessageType messageType = Message.MessageType.valueOf(request.getMessageType());
 
+            boolean isSystem = currentUser.getRole().equals(Role.CUSTOMER) ? false : true;
+
             // Tạo tin nhắn mới
             Message message = messageService.createMessage(
                     conversation,
                     currentUser,
                     request.getContent(),
                     messageType,
-                    request.getFileUrl()
+                    request.getFileUrl(),
+                    isSystem
             );
 
             MessageDTO messageDTO = messageMapper.toMessageDTO(message);

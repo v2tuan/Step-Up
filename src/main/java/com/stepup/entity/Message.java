@@ -22,7 +22,7 @@ public class Message {
     private Conversation conversation;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id", nullable = false)
+    @JoinColumn(name = "sender_id")
     private User sender;
 
     @Column(nullable = false)
@@ -40,6 +40,9 @@ public class Message {
 
     @Column(name = "read_at")
     private LocalDateTime readAt;
+
+    @Column(name = "is_CSKH", nullable = false)
+    private boolean CSKH;
 
     // Enum cho loại tin nhắn
     public enum MessageType {

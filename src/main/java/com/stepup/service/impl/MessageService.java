@@ -36,13 +36,14 @@ public class MessageService {
     }
 
     @Transactional
-    public Message createMessage(Conversation conversation, User sender, String content, Message.MessageType messageType, String fileUrl) {
+    public Message createMessage(Conversation conversation, User sender, String content, Message.MessageType messageType, String fileUrl, boolean isSystem) {
         Message message = Message.builder()
                 .conversation(conversation)
                 .sender(sender)
                 .content(content)
                 .messageType(messageType)
                 .fileUrl(fileUrl)
+                .CSKH(isSystem)
                 .build();
 
         // Cập nhật thời gian của cuộc hội thoại
@@ -62,7 +63,7 @@ public class MessageService {
     public void markAllAsRead(Conversation conversation, User reader) {
         List<Message> unreadMessages = messageRepository.findByConversationOrderByCreatedAtAsc(conversation)
                 .stream()
-                .filter(m -> m.getReadAt() == null && !m.getSender().equals(reader))
+                .filter(m -> m.getReadAt() == null && m.getSender() != null && !m.getSender().equals(reader))
                 .toList();
 
         for (Message message : unreadMessages) {

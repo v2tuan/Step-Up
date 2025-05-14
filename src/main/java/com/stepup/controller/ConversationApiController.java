@@ -44,25 +44,42 @@ public class ConversationApiController {
         // Lấy danh sách cuộc hội thoại
         List<Conversation> conversations = conversationService.getConversationsByCustomer(currentUser);
 
-        // Chuyển đổi sang DTO và thêm thông tin bổ sung
-        List<ConversationDTO> conversationDTOs = conversations.stream()
-                .map(conversation -> {
-                    ConversationDTO dto = conversationMapper.toConversationDTO(conversation);
+        if(!conversations.isEmpty()) {
+            // Chuyển đổi sang DTO và thêm thông tin bổ sung
+            List<ConversationDTO> conversationDTOs = conversations.stream()
+                    .map(conversation -> {
+                        ConversationDTO dto = conversationMapper.toConversationDTO(conversation);
 
-                    // Lấy số tin nhắn chưa đọc
-                    dto.setUnreadCount(messageService.countUnreadMessages(conversation));
+                        // Lấy số tin nhắn chưa đọc
+                        dto.setUnreadCount(messageService.countUnreadMessages(conversation));
 
-                    // Lấy tin nhắn gần nhất
-                    List<Message> messages = messageService.getMessagesByConversation(conversation);
-                    if (!messages.isEmpty()) {
-                        dto.setLastMessage(messageMapper.toMessageDTO(messages.get(messages.size() - 1)));
-                    }
+                        // Lấy tin nhắn gần nhất
+                        List<Message> messages = messageService.getMessagesByConversation(conversation);
+                        if (!messages.isEmpty()) {
+                            dto.setLastMessage(messageMapper.toMessageDTO(messages.get(messages.size() - 1)));
+                        }
 
-                    return dto;
-                })
-                .collect(Collectors.toList());
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(conversationDTOs.getFirst());
+        }else {
+            Conversation conversation = conversationService.createConversation(currentUser, "");
+            ConversationDTO conversationDTO = conversationMapper.toConversationDTO(conversation);
+            // Tạo tin nhắn mới
+            String content = "Xin chào! Cảm ơn bạn đã liên hệ với chúng tôi. Chúng tôi sẽ hỗ trợ bạn trong thời gian sớm nhất.";
 
-        return ResponseEntity.ok(conversationDTOs.getFirst());
+            boolean isSystem = true;
+            Message message = messageService.createMessage(
+                    conversation,
+                    null,
+                    content,
+                    Message.MessageType.TEXT,
+                    "",
+                    isSystem
+            );
+            return ResponseEntity.ok(conversationDTO);
+        }
     }
 
     // Lấy thông tin chi tiết của một cuộc hội thoại

@@ -39,7 +39,7 @@ public class MessageApiController {
     public ResponseEntity<List<MessageDTO>> getMessages(
             @RequestParam Long conversationId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "120") int size) {
 
         Optional<Conversation> conversationOpt = conversationService.getConversationById(conversationId);
 
@@ -72,35 +72,35 @@ public class MessageApiController {
     }
 
 //     Gửi tin nhắn mới
-    @PostMapping
-    public ResponseEntity<MessageDTO> sendMessage(@RequestBody ChatMessageRequest request) {
-        Optional<Conversation> conversationOpt = conversationService.getConversationById(request.getConversationId());
-
-        if (conversationOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Conversation conversation = conversationOpt.get();
-        User currentUser = securityUtils.getLoggedInUser();
-
-        Message.MessageType messageType = Message.MessageType.valueOf(request.getMessageType());
-
-        // Tạo tin nhắn mới
-        Message message = messageService.createMessage(
-                conversation,
-                currentUser,
-                request.getContent(),
-                messageType,
-                request.getFileUrl()
-        );
-
-        MessageDTO messageDTO = messageMapper.toMessageDTO(message);
-
-        // Gửi tin nhắn qua WebSocket
-        messagingTemplate.convertAndSend("/topic/conversation." + conversation.getId(), messageDTO);
-
-        return ResponseEntity.ok(messageDTO);
-    }
+//    @PostMapping
+//    public ResponseEntity<MessageDTO> sendMessage(@RequestBody ChatMessageRequest request) {
+//        Optional<Conversation> conversationOpt = conversationService.getConversationById(request.getConversationId());
+//
+//        if (conversationOpt.isEmpty()) {
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//        Conversation conversation = conversationOpt.get();
+//        User currentUser = securityUtils.getLoggedInUser();
+//
+//        Message.MessageType messageType = Message.MessageType.valueOf(request.getMessageType());
+//
+//        // Tạo tin nhắn mới
+//        Message message = messageService.createMessage(
+//                conversation,
+//                currentUser,
+//                request.getContent(),
+//                messageType,
+//                request.getFileUrl()
+//        );
+//
+//        MessageDTO messageDTO = messageMapper.toMessageDTO(message);
+//
+//        // Gửi tin nhắn qua WebSocket
+//        messagingTemplate.convertAndSend("/topic/conversation." + conversation.getId(), messageDTO);
+//
+//        return ResponseEntity.ok(messageDTO);
+//    }
 
     // Đánh dấu tin nhắn đã đọc
     @PutMapping("/{id}/read")

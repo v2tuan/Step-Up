@@ -54,3 +54,51 @@
 </script>
 </body>
 </html>
+
+<script>
+    const list = document.querySelector(".content-messages-list");
+    const li = document.createElement("li");
+    li.dataset.conversationId = conv.id;
+    li.innerHTML = `
+                <a href="#" class="conversation-link" data-conversation-id="${conv.id}">
+                    <img class="content-message-image" src="${conv.customer.profileImage || '/img/default_avatar.png'}" alt="">
+                    <span class="content-message-info">
+                        <span class="content-message-name">${conv.customer.fullName || 'Không có tên'}</span>
+                        <span class="content-message-text">${lastMessageText}</span>
+                    </span>
+                    <span class="content-message-more">
+                        ${conv.unreadCount > 0 ? `<span class="content-message-unread">${conv.unreadCount}</span>` : ""}
+                        <span class="content-message-time">${updatedAtFormatted}</span>
+                    </span>
+                </a>
+            `;
+    list.appendChild(li);
+
+    // Thêm cuộc hội thoại mới vào danh sách
+    function addConversationNew(message) {
+        const list = document.querySelector(".content-messages-list");
+        const titleElement = list.querySelector('.content-message-title');
+
+        const li = document.createElement("li");
+        li.dataset.conversationId = message.conversationId;
+        li.innerHTML = `
+                <a href="#" class="conversation-link" data-conversation-id="${message.conversationId}">
+                    <img class="content-message-image" src="${message.sender.profileImage || '/img/default_avatar.png'}" alt="">
+                    <span class="content-message-info">
+                        <span class="content-message-name">${message.sender.fullName || 'Không có tên'}</span>
+                        <span class="content-message-text">${message.content}</span>
+                    </span>
+                    <span class="content-message-more">
+<!--                        ${conversation.unreadCount > 0 ? `<span class="content-message-unread">${conversation.unreadCount}</span>` : ""}-->
+                        <span class="content-message-time">${formatTime(message.createdAt)}</span>
+                    </span>
+                </a>
+            `;
+
+        // Thêm vào sau tiêu đề "Recently"
+        list.insertBefore(li, titleElement.nextSibling);
+
+        // Thêm sự kiện click cho cuộc hội thoại mới
+        setupConversationListeners();
+    }
+</script>
