@@ -4,6 +4,7 @@ import com.stepup.entity.User;
 import com.stepup.utils.JwtTokenUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -38,6 +39,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             "/api/v1/users/login",
             "/api/v1/users/register",
             "/coupon/**",
+//            "/admin/**",
+            "/login",
+            "/css/**",
+            "/js/**",
+            "/img/**",
+//            "/ws/websocket",
             "/api/v1/**" // Cần cấu hình lại sau cái này chỉ để test
     );
 
@@ -48,47 +55,73 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String requestPath = request.getServletPath();
         // Bỏ qua xác thực nếu request thuộc danh sách bypassPaths
         for (String path : bypassPaths) {
-            if(new AntPathMatcher().match("/api/v1/cart/**", requestPath)) {
+            if (new AntPathMatcher().match("/api/v1/cart/**", requestPath)) {
                 break;
             }
-            if(new AntPathMatcher().match("/api/v1/users/profile", requestPath)) {
+            if (new AntPathMatcher().match("/api/v1/chat/**", requestPath)) {
                 break;
             }
-            if(new AntPathMatcher().match("/api/v1/favorite/**", requestPath)) {
+            if (new AntPathMatcher().match("/api/v1/users/profile", requestPath)) {
                 break;
             }
- 			if(new AntPathMatcher().match("/api/v1/products/**", requestPath)) {
+            if (new AntPathMatcher().match("/api/v1/favorite/**", requestPath)) {
                 break;
             }
-             if(new AntPathMatcher().match("/api/v1/orders/**", requestPath)) {
+            if (new AntPathMatcher().match("/api/v1/products/**", requestPath)) {
+                break;
+            }
+            if (new AntPathMatcher().match("/api/v1/orders/**", requestPath)) {
                 break;
             }
             if (new AntPathMatcher().match(path, requestPath)) {
                 filterChain.doFilter(request, response);
                 return;
             }
- 			if(new AntPathMatcher().match("/api/v1/address/**", requestPath)) {
+            if (new AntPathMatcher().match("/api/v1/address/**", requestPath)) {
                 break;
             }
         }
 
-        // Lấy token từ Header thay vì Session
-        String authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization header");
+        // Tìm token từ cả Cookie và Header
+        String token = null;
+
+        // 1. Kiểm tra token trong Cookie
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("auth_token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        // 2. Nếu không tìm thấy trong Cookie, kiểm tra trong Header
+        if (token == null) {
+            String authorizationHeader = request.getHeader("Authorization");
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                token = authorizationHeader.substring(7); // Cắt "Bearer " để lấy token thực sự
+            }
+        }
+
+        // Xử lý khi không tìm thấy token từ cả hai nguồn
+        if (token == null) {
+            String acceptHeader = request.getHeader("Accept");
+            if (acceptHeader != null && acceptHeader.contains("text/html")) {
+                response.sendRedirect("/login");
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization token");
+            }
             return;
         }
 
-        String token = authorizationHeader.substring(7); // Cắt "Bearer " để lấy token thực sự
-
         try {
-            // Lấy email từ token thay vì từ Session
+            // Lấy email từ token
             String email = jwtTokenUtil.extractEmail(token);
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
             // Kiểm tra xem token JWT có hợp lệ không
             if (jwtTokenUtil.validateToken(token, userDetails)) {
-
                 // Tạo đối tượng xác thực chứa thông tin người dùng
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
@@ -98,12 +131,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                         );
 
                 // Đặt đối tượng xác thực vào SecurityContext của Spring Security
-                // Điều này giúp hệ thống nhận diện người dùng cho các request sau
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-
         } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
+            String acceptHeader = request.getHeader("Accept");
+            if (acceptHeader != null && acceptHeader.contains("text/html")) {
+                response.sendRedirect("/login");
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization token");
+            }
+//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
             return;
         }
 
