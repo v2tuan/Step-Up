@@ -18,7 +18,11 @@ public interface ProductRepository  extends JpaRepository<Product, Long> {
     List<Product> findByIsActiveTrue();
     List<Product> findByIsActiveFalse();
     Optional<Product> findBySlug(String slug);
+    @Query("SELECT pv.product FROM ProductVariant pv  WHERE pv.id = :productVariantId")
+    Optional<Product> findProductByProductVariantId(@Param("productVariantId") Long productVariantId);
 
+    @Query("UPDATE Product p SET p.rating = :averageRating WHERE p.id = :productId")
+    int updateRatingByProductId(@Param("productId") Long productId, @Param("averageRating") Double averageRating);
     // tìm kiếm sản phẩm theo tên
     @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Product> searchByName(@Param("keyword") String keyword);

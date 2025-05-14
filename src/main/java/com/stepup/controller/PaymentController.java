@@ -1,9 +1,11 @@
 package com.stepup.controller;
 
+import com.stepup.Enum.OrderShippingStatus;
 import com.stepup.Enum.PaymentStatus;
 import com.stepup.components.VNPayUtils;
 import com.stepup.dtos.requests.payment.PaymentDTO;
 import com.stepup.dtos.responses.ResponseObject;
+import com.stepup.entity.Order;
 import com.stepup.service.impl.OrderServiceImpl;
 import com.stepup.service.impl.PaymentService;
 import com.stepup.service.impl.VNPayService;
@@ -19,10 +21,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -111,5 +110,27 @@ public class PaymentController {
         // So sánh mã bảo mật tính toán với mã bảo mật nhận được
         return calculatedHash.equals(vnp_SecureHash);
     }
+
+    @PostMapping("/payment")
+    public ResponseEntity<ResponseObject> Payment(@RequestParam Long orderId) {
+        Optional<Order> optionalOrder = orderService.getOrderById(orderId);
+        if (optionalOrder.isPresent()) {
+            Order order = optionalOrder.get();
+            orderService.updatePaymentStatus1(order,PaymentStatus.COMPLETED);
+            return ResponseEntity.ok(
+                    ResponseObject.builder()
+                            .message("Payment order successfully")
+                            .build()
+            );
+        }
+
+        return ResponseEntity.badRequest().body(
+                ResponseObject.builder()
+                        .message("Payment the order failed")
+                        .build()
+        );
+    }
+
+
 }
 

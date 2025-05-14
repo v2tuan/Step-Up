@@ -9,14 +9,19 @@ import java.util.List;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    List<Review> findByProduct_Id(Long productId);
-    List<Review> findByUser_Id(Long userId);
-    void deleteByProduct_Id(Long productId);
+    List<Review> findByProductId(Long productId);
+
+    List<Review> findByUserId(Long userId);
+
+    void deleteByProductId(Long productId);
+
+    // Kiểm tra xem người dùng đã đánh giá đơn hàng hay chưa
+    boolean existsByOrderIdAndUserId(Long orderId, Long userId);
 
     // Tính trung bình đánh giá của sản phẩm
-    @Query("SELECT COALESCE(AVG(r.rating), 0) FROM Review r WHERE r.product.id = :productId")
+    @Query("SELECT COALESCE(AVG(CAST(r.rating AS double)), 0.0) FROM Review r WHERE r.product.id = :productId")
     Double getAverageRatingByProductId(Long productId);
 
-    //  Lấy danh sách đánh giá của sản phẩm theo rating
-    List<Review> findByProduct_IdAndRating(Long productId, int rating);
+    // Lấy danh sách đánh giá của sản phẩm theo rating
+    List<Review> findByProductIdAndRating(Long productId, int rating);
 }

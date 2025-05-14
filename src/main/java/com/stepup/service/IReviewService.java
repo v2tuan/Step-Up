@@ -1,12 +1,17 @@
 package com.stepup.service;
+import com.stepup.dtos.requests.ReviewDTO;
+import com.stepup.dtos.responses.ReviewResponse;
 import com.stepup.entity.Review;
+import com.stepup.entity.User;
 
 import java.util.List;
 import java.util.Optional;
 public interface IReviewService {
 
+
     // Lấy danh sách đánh giá theo sản phẩm
-    List<Review> getReviewsByProductId(Long productId);
+    void createReview(ReviewDTO reviewDTO, User user);
+    List<ReviewResponse> getReviewsByProductId(Long productId);
 
     //  Lấy danh sách đánh giá theo người dùng
     List<Review> getReviewsByUserId(Long userId);
