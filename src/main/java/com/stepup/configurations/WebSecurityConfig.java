@@ -1,5 +1,6 @@
 package com.stepup.configurations;
 
+import com.stepup.Enum.Role;
 import com.stepup.filter.JwtTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,13 +19,13 @@ public class WebSecurityConfig {
     @Autowired
     private JwtTokenFilter jwtTokenFilter;
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
+                                .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
 //                        .requestMatchers(
 //                                "/assets/**", "/cdn.jsdelivr.net/**", "/cdnjs.cloudflare.com/**",
 //                                "/register", "/login/**", "/api/**",

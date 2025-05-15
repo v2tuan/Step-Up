@@ -11,6 +11,7 @@ import com.stepup.service.impl.ConversationService;
 import com.stepup.service.impl.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class ConversationApiController {
     private final MessageService messageService;
     private final SecurityUtils securityUtils;
     private final ConversationMapper conversationMapper;
+    private final SimpMessagingTemplate messagingTemplate;
     private final IMessageMapper messageMapper;
 
     // Lấy tất cả cuộc hội thoại
@@ -78,6 +80,9 @@ public class ConversationApiController {
                     "",
                     isSystem
             );
+
+//            messagingTemplate.convertAndSend("/topic/conversation." + conversation.getId(), messageMapper.toMessageDTO(message)); // giành cho người dùng
+//            messagingTemplate.convertAndSend("/topic/conversation", messageMapper.toMessageDTO(message)); // giành cho admin
             return ResponseEntity.ok(conversationDTO);
         }
     }

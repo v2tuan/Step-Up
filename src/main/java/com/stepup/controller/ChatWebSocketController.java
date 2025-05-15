@@ -19,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Controller
@@ -39,7 +40,7 @@ public class ChatWebSocketController {
         User currentUser = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();;
         boolean cskh = currentUser.getRole().equals(Role.CUSTOMER) ? false : true;
         MessageDTO messageDto = MessageDTO.builder()
-                .createdAt(request.getCreatedAt())
+                .createdAt(LocalDateTime.now())
                 .conversationId(request.getConversationId())
                 .content(request.getContent())
                 .messageType(request.getMessageType())
