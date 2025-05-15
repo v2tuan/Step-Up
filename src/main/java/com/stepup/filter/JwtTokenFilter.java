@@ -66,6 +66,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             if(new AntPathMatcher().match("/api/v1/reviews/**", requestPath)) {
                 break;
             }
+            if(new AntPathMatcher().match("/api/v1/search/**", requestPath)) {
+                break;
+            }
             if (new AntPathMatcher().match(path, requestPath)) {
                 filterChain.doFilter(request, response);
                 return;

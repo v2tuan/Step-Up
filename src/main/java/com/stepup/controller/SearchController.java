@@ -3,6 +3,7 @@ package com.stepup.controller;
 import com.stepup.entity.Color;
 import com.stepup.entity.Favorite;
 import com.stepup.entity.Product;
+import com.stepup.entity.User;
 import com.stepup.mapper.IProductMapper;
 import com.stepup.dtos.responses.ProductCardResponse;
 import com.stepup.repository.ColorRepository;
@@ -12,6 +13,7 @@ import com.stepup.service.redis.ProductRedisService;
 import com.stepup.service.impl.ProductServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,8 +50,9 @@ public class SearchController {
         List<Product> products = productService.searchProductsByQuery(searchQuery);
 
         // Test user (same as provided code)
-        long userId = 39;
-        List<Favorite> favorites = favoriteService.getFavoriteByUserId(userId);
+        Object  principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) principal;
+        List<Favorite> favorites = favoriteService.getFavoriteByUserId(user.getId());
 
         // Get set of favorite color IDs
         Set<Long> favoriteColorIds = favorites.stream()
