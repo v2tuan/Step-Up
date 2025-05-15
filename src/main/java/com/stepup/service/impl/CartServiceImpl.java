@@ -96,6 +96,28 @@ public class CartServiceImpl implements ICartService {
         return "Thêm vào giỏ hàng thành công";
     }
 
+    public String clearCart(User user) {
+        // Lấy giỏ hàng của người dùng hoặc tạo mới nếu chưa có
+        Optional<Cart> optionalCart = repo.findByUser_Id(user.getId());
+        // Tìm giỏ hàng theo ID
+//        Optional<Cart> optionalCart = repo.findById(cartId);
+        if (optionalCart.isEmpty()) {
+            return "Giỏ hàng không tồn tại";
+        }
+
+        Cart cart = optionalCart.get();
+
+        // Xóa tất cả CartItem thuộc giỏ hàng này
+        List<CartItem> cartItems = cartItemRepository.findByCart_Id(cart.getId());
+        if (cartItems.isEmpty()) {
+            return "Giỏ hàng đã trống";
+        }
+
+        cartItemRepository.deleteAll(cartItems);
+
+        return "Đã xóa toàn bộ sản phẩm khỏi giỏ hàng";
+    }
+
     public String removeFromCart(User user, long cartItemId) {
         // Lấy giỏ hàng của người dùng hoặc tạo mới nếu chưa có
         Cart cart = repo.findByUser_Id(user.getId()).orElseGet(() -> {

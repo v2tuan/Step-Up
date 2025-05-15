@@ -364,6 +364,12 @@
     .retry-button:hover {
         background-color: rgba(244, 67, 54, 0.1);
     }
+
+    .vertical-layout {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* hoặc center nếu bạn muốn căn giữa */
+    }
 </style>
 <body>
 
@@ -710,10 +716,11 @@
                         <span class="content-message-name">${conv.customer.fullName || 'Không có tên'}</span>
                         <span class="content-message-text">${lastMessageText}</span>
                     </span>
-                    <span class="content-message-more">
-                        ${conv.unreadCount > 0 ? `<span class="content-message-unread">${conv.unreadCount}</span>` : ""}
-                        <span class="content-message-time">${updatedAtFormatted}</span>
-                    </span>
+                    <span class="content-message-more vertical-layout">
+    ${conv.unreadCount > 0 ? `<span class="content-message-unread"></span>` : ""}
+<!--    ${conv.unreadCount > 0 ? `<span class="content-message-unread">${conv.unreadCount}</span>` : ""}-->
+<!--    <span class="content-message-time">${formatTime(conv.updatedAt)}</span>-->
+</span>
                 </a>
             `;
                 list.appendChild(li);
@@ -1325,7 +1332,9 @@
                         <span class="content-message-text">${message.content}</span>
                     </span>
                     <span class="content-message-more">
-                        <span class="content-message-time">${formatTime(message.createdAt)}</span>
+                    <span class="content-message-unread"></span>
+
+<!--                        <span class="content-message-time">${formatTime(message.createdAt)}</span>-->
                     </span>
                 </a>
             `;
@@ -1348,8 +1357,23 @@
                 const messageTextElement = item.querySelector('.content-message-text');
                 messageTextElement.textContent = message.content;
 
-                const timeElement = item.querySelector('.content-message-time');
-                timeElement.textContent = formatTime(message.createdAt);
+                // const timeElement = item.querySelector('.content-message-time');
+                // if (timeElement) {
+                //     timeElement.textContent = formatTime(message.createdAt);
+                // }
+
+                const moreContainer = item.querySelector('.content-message-more');
+                if (moreContainer) {
+                    if(!message.cskh) {
+                        const newBadge = document.createElement('span');
+                        newBadge.className = 'content-message-unread';
+                        // newBadge.textContent = conv.unreadCount || 1; // hoặc giá trị mới
+
+                        // Chèn lên đầu hoặc tùy ý
+                        moreContainer.prepend(newBadge);
+                    }
+                }
+
             }
         }
 
@@ -1391,13 +1415,13 @@
             // 1. Có tin nhắn chưa đọc
             // 2. Thời gian cập nhật mới nhất
             items.sort((a, b) => {
-                const aUnread = a.querySelector('.content-message-unread') !== null;
-                const bUnread = b.querySelector('.content-message-unread') !== null;
-
-                // Nếu một cuộc hội thoại có tin nhắn chưa đọc và cuộc kia không có
-                if (aUnread !== bUnread) {
-                    return bUnread ? 1 : -1;
-                }
+                // const aUnread = a.querySelector('.content-message-unread') !== null;
+                // const bUnread = b.querySelector('.content-message-unread') !== null;
+                //
+                // // Nếu một cuộc hội thoại có tin nhắn chưa đọc và cuộc kia không có
+                // if (aUnread !== bUnread) {
+                //     return bUnread ? 1 : -1;
+                // }
 
                 // Nếu cả hai đều có hoặc không có tin nhắn chưa đọc, sắp xếp theo thời gian
                 const timeA = new Date(a.dataset.updatedAt || 0);

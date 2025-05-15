@@ -34,6 +34,8 @@ public class OrderServiceImpl implements IOderService {
     @Autowired
     private CouponRepository couponRepo;
     @Autowired
+    private CartServiceImpl cartService;
+    @Autowired
     private ProductVariantRepository productVariantRepo;
 
     @Override
@@ -90,6 +92,7 @@ public class OrderServiceImpl implements IOderService {
         Order order = oderRepository.findByOrderCode(orderCode).orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
         if(order != null) {
             order.setPaymentStatus(paymentStatus);
+            oderRepository.save(order);
             return true;
         }
         return false;
@@ -196,6 +199,7 @@ public class OrderServiceImpl implements IOderService {
         order.setOrderItems(orderItems);
         order.setStatus(OrderShippingStatus.PENDING);
         order.setPaymentStatus(PaymentStatus.PENDING);
+        cartService.clearCart(loginUser);
         return oderRepository.save(order);
     }
 
