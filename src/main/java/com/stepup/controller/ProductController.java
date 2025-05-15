@@ -10,6 +10,7 @@ import com.stepup.entity.Favorite;
 import com.stepup.entity.Product;
 import com.stepup.entity.User;
 import com.stepup.mapper.IProductMapper;
+import com.stepup.service.CloudinaryService;
 import com.stepup.service.impl.FavoriteServiceImpl;
 import com.stepup.service.redis.ProductRedisService;
 import com.stepup.service.impl.ProductServiceImpl;
@@ -41,9 +42,15 @@ public class ProductController {
     private FavoriteServiceImpl favoriteService;
     @Autowired
     IProductMapper productMapper;
+    @Autowired
+    CloudinaryService cloudinaryService;
     @Value("${maximum_per_product}")
     private int maximumPerProduct;
 
+    @PostMapping("/upload")
+    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok().body(cloudinaryService.uploadFile(file));
+    }
     @GetMapping
     public ResponseEntity<?> getAllProducts() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();

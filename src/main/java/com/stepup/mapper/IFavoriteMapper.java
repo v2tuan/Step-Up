@@ -9,8 +9,6 @@ import java.util.List;
 
 @Mapper (componentModel = "spring")
 public interface IFavoriteMapper {
-
-
     @Mapping(target = "title", expression = "java(getTitle(favorite))")
     FavoriteRespone toFavoriteRespone(Favorite favorite); // ánh xạ từng CartItem
 
