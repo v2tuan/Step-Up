@@ -156,7 +156,7 @@ public class OrderController {
             Order order = optionalOrder.get();
             if(order.getPaymentMethod().equals(PaymentMethod.VNPAY) && order.getPaymentStatus().equals(PaymentStatus.COMPLETED))
             {
-                status = OrderShippingStatus.RETURNED;
+                status = OrderShippingStatus.CANCELLED;
                 orderService.updateOrderStatus(orderId, status);
                 orderService.updatePaymentStatus1(order,PaymentStatus.REFUNDING);
             }
